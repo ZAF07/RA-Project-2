@@ -24,3 +24,12 @@ Its about people coming together to help one another with tasks big or small. Ma
 ![Blank diagram](https://user-images.githubusercontent.com/61228520/119860478-f2fab800-bf48-11eb-95e7-642d5e7602aa.png)
 
 <img src="">![Blank diagram (1)](https://user-images.githubusercontent.com/61228520/119860421-e1b1ab80-bf48-11eb-9d8b-50de90984624.png)
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+![Blank diagram (3)](https://user-images.githubusercontent.com/61228520/119867304-51776480-bf50-11eb-847b-f0d2ef09c456.png)
