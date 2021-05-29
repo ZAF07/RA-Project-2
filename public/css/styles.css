@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap');
+
+/* Global styles */
+* {
+  font-family: 'Roboto', sans-serif;  
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+}
+
+
+
+
+/* NAV STYLES */
+
+.main-nav {
+  background-color: #a211f8;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 2px 4px 21px 9px #000;
+  position: relative;
+  z-index: 99;
+}
+.main-nav-link {
+  color: #000;
+  opacity: .5;
+}
+
+.main-nav-link:hover {
+  color: #000;
+}
+
+.masthead-brand {
+  font-size: 280%;
+  letter-spacing: .2em;
+}
+.active-tab {
+  opacity: 2;
+  text-shadow: 2px 2px 5px #555;
+}
+
+.active-tab::after {
+  content: '';
+  display: block;
+  border-bottom: #000;
+  width: 100%;
+  height: 10%;
+  background-color: #000;
+  box-shadow: 0px 3px 5px 1px #000;
+  opacity: .7;
+}
+
+/* HERO */
+.hero {
+  /* background-image: url('../images/hero.jpg'); */
+ background-image:  linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.7)),url(../images/hero.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  height: 100%;
+  box-shadow: 2px 4px 21px 9px #000;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section-2 {
+   background-image:  linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.5)),url(../images/hero-section-2.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .hero, .hero-section-2 {
+    height: 100vh;
+  }
+}
+
+/* REGISTER PAGE */
+.sign-in-btn {
+  background-color: #a211f8;
+  opacity: .9;
+  box-shadow: 2px 2px 8px 1px #000;
+}
+.sign-in-btn:hover {
+  opacity: 1;
+}

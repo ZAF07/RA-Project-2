@@ -1,0 +1,32 @@
+<%- include('../partials/header.ejs') %> 
+<%- include('../partials/nav.ejs') %> 
+<% const date = new Date() %> 
+
+  <div class="container mt-5 pt-5 pl-0 pr-0">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8 p-5">
+        <form class="form-signin mt-5 pt-5 text-center">
+          
+          <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+          <label for="inputEmail" class="sr-only">Email address</label>
+          <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+  
+          <button class="btn btn-lg btn-block mt-2 pt-3 sign-in-btn" type="submit">Sign in</button>
+          <p class="mt-5 mb-3 text-muted">© <%= date.getFullYear() %></p>
+        </form>
+      </div>
+      <div class="col-sm-2"></div>
+    </div>
+  </div>
+
+
+
+<%- include('../partials/footer.ejs') %> 
+
+
+
+
+
