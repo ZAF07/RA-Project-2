@@ -47,4 +47,11 @@ export const viewJobs = async (req, res) => {
   });
 };
 
+export const postInterestForJob = (req, res) => {
+  if (!req.cookies) {
+    res.render('homePage/login', {title: 'Log In', logInErr: 'Oopsie!! You have to log in to send an interest!'})
+    return;
+  }
+  res.send('Welcome')
+}
 
