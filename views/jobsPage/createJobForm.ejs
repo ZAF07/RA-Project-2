@@ -1,0 +1,71 @@
+<%- include('../partials/header.ejs') %> 
+<%- include('../partials/nav.ejs') %> 
+<% const date = new Date() %> 
+
+  <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-5 pt-md-5">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8 p-5">
+        
+        <form class="form-signin mt-5 pt-5 text-center" method="POST" action="/jobs/create-job">
+
+          <h1 class="h3 mb-3 font-weight-normal">Let's Create A New Job!</h1>
+          <!-- <label for="inputEmail" class="sr-only">Email address</label>
+          <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required=""> -->
+
+          <!-- SALARY -->
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="salary">Salary</label>
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input type="text" class="form-control" id="salary" aria-label="Dollar amount (with dot and two decimal places)" name="salary">
+          </div>
+
+          <!-- JOB LOCATION -->
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">@</span>
+            </div>
+            <input type="text" class="form-control" placeholder="Location" aria-label="Job Location" aria-describedby="basic-addon1" name="location">
+          </div>
+
+          <!-- JOB CATEGORY -->
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="inputGroupSelect01">Category</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01" name="jobCat">
+              <option selected>Choose...</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
+
+          <!-- JOB INFO -->
+          <div class="input-group input-group-sm flex-nowrap">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Description</span>
+            </div>
+            <textarea class="form-control" aria-label="With textarea" name="jobInfo"></textarea>
+          </div>
+  
+          <button class="btn btn-lg btn-block mt-2 pt-3 sign-in-btn" type="submit">Create !</button>
+          <p class="mt-5 mb-3 text-muted">© <%= date.getFullYear() %></p>
+        </form>
+      </div>
+      <div class="col-sm-2"></div>
+    </div>
+  </div>
+
+
+
+<%- include('../partials/footer.ejs') %> 
+
+
+
+
+
