@@ -1,0 +1,48 @@
+<%- include('../partials/header.ejs') %> 
+<%- include('../partials/nav.ejs') %> 
+ 
+  <div class="container mt-5 pt-5 pl-0 pr-0">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8 p-5 text-center">
+        <h3>Available Jobs:</h3>
+        <% jobs.forEach(job => { %>
+         <div class="card p-3 shadow">
+           <h3></h3>
+           <h2><%= job.job_cat %></h2>
+           <p>location : <%= job.job_location %></p>
+           <small><%= job.job_info %> </small>
+         </div>
+        <% }) %>
+
+        <!-- PAGINATION -->
+        <% if (typeof numOfPaginationLinks === 'number') { %>
+         <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
+         
+         <% } %>
+        <% } %>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+              <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
+                  <li class="page-item"><a class="page-link" href="/jobs/<%= i + 1 %>"><%= i + 1 %></a></li>
+              <% } %>
+              
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+      <div class="col-sm-2"></div>
+    </div>
+  </div>
+  
+<%- include('../partials/footer.ejs') %> 
