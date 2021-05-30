@@ -1,3 +1,5 @@
+// JS for active nav links
+
 const arrOfLinkTab = Array.from(document.querySelectorAll('.main-nav-link'));
 
 arrOfLinkTab.forEach(tab => {
@@ -12,5 +14,9 @@ arrOfLinkTab.forEach(tab => {
     if (tab.innerHTML === 'Home') {
       tab.classList.add('active-tab')
     }
+  } else if (window.location.pathname === '/jobs/1') {
+        if (tab.innerHTML === 'View Jobs') {
+          tab.classList.add('active-tab');
+        }
   }
 })
