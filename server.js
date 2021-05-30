@@ -5,6 +5,7 @@ const { pool } = pg;
 
 // Import Routers
 import homeRouters from './routes/homeRouters.js';
+import jobsRouters from './routes/jobsRouters.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('./public'))
 app.use('/', homeRouters);
+app.use('/jobs', jobsRouters);
 
 app.listen(
   process.env.PORT,
