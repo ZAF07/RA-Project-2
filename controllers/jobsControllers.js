@@ -75,14 +75,14 @@ export const postInterestForJob = (req, res) => {
 
 export const postCreateJob = (req, res) => {
   if (!req.cookies) {
-    // res.send('Create a form for users to post new jobs');
-    // res.render('homePage/login', {
-    //   title: 'Log In',
-    //   logInErr: 'Oopsie!! You have to log in to send an interest!',
-    // });
 
-    res.render('jobsPage/createJobForm', { title: 'Create A New Job' });
-    return;
+    res.render('homePage/login', {
+      title: 'Log In',
+      logInErr: 'Whoops!! You have to log in to create a new job!',
+    });
+
+    // res.render('jobsPage/createJobForm', { title: 'Create A New Job' });
+    // return;
   }
   
   res.render('jobsPage/createJobForm', {title: 'Create A New Job'})
