@@ -15,4 +15,4 @@ CREATE TABLE IF NOT EXISTS jobs (
   date DATE
 );
 
-insert into jobs (employer_id, employee_id, salary, job_location, job_cat, job_info) values(1, 1, 20, 'Tampines Central', 'Send', 'I need a parcel delivered by tonight 9pm please. Any help would be good!');
+insert into jobs (employer_id, employee_id, salary, job_location, job_cat, job_info) values(1, 1, 20, 'Pasir Ris', 'Fixing my car', 'I need help with repairing my car tonight! Sounds like a huge task but i will be doing the hard work. You just have to assist me. Or feed me if i feel hungry;)');
