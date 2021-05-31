@@ -29,15 +29,43 @@ export const postLogin = (req, res) => {
   res.json('req.body');
 };
 
-export const postRegister = (req, res) => {
+export const postRegister = async (req, res) => {
   // retrieve user info from body
+  const { email, password } = req.body;
 
   // check if user already exists
-    // redirect to register page with err msg
+    try {
+      const { rows } = await pool.query('SELECT * FROM users WHERE email=$1', [
+        email,
+      ]);
+      if (!rows.length) {
+        const { rows } = await pool.query(
+          'INSERT INTO users (email, password) VALUES($1,$2) RETURNING *',
+          [email, password]
+        );
+        // New User created and stored in rows
+        res.json({rows,
+        toDo: 'Create a profile page where there are two pages. One for jobs posted and one for jobs accepted'});
+        return;
+      }
+      // redirect to register page with err msg if user already exists
+      res.render('homePage/register', {
+        title: 'Register an account!',
+        registerErr:
+          'A user with the email address already exists. Sign in or create a new account here',
+      });
+      //res.send('User already exists. Render register page with user exists err msg')
+
+      return;
+    } catch (error) {
+      console.log('ERROR FROM postRegister query --> ', error);
+      res.send(error)
+    }
+
   
   // if not user exists, hash password and save to DB
   
   // Redirect to profile page or viewJobs Page
 
-  res.send('Handle errors and save user if no errors')
+  // res.json({email, password})
 }
