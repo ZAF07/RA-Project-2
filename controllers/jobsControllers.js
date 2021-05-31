@@ -3,6 +3,8 @@ import pool from '../model/db.js';
 export const viewJobs = async (req, res) => {
   const page = req.query.page;
   const limit = req.query.limit;
+  const isLoggedIn = req.session.isLoggedIn;
+  console.log('here ---<< ', req.session.isLoggedIn);
 
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -38,9 +40,10 @@ export const viewJobs = async (req, res) => {
   // console.log(currentPage);
   res.render('jobsPage/viewJobs', {
     title: 'Jobs',
+    isUserLoggedIn: isLoggedIn,
     jobs: jobsToDisplay,
     numOfPaginationLinks,
-    currentPage: parseInt(page)
+    currentPage: parseInt(page),
   });
 };
 
@@ -62,7 +65,7 @@ export const createJob = async (req, res) => {
 };
 
 export const postInterestForJob = (req, res) => {
-  if (!req.cookies) {
+  if (!req.session.isLoggedIn) {
     res.render('homePage/login', {title: 'Log In', logInErr: 'Oopsie!! You have to log in to send an interest!'})
     return;
   }
@@ -70,7 +73,9 @@ export const postInterestForJob = (req, res) => {
 }
 
 export const postCreateJob = (req, res) => {
-  if (!req.cookies) {
+  const isLoggedIn = req.session.isLoggedIn;
+
+  if (!req.session.isLoggedIn) {
 
     res.render('homePage/login', {
       title: 'Log In',
@@ -82,6 +87,6 @@ export const postCreateJob = (req, res) => {
     // return;
   }
   
-  res.render('jobsPage/createJobForm', {title: 'Create A New Job'})
+  res.render('jobsPage/createJobForm', {title: 'Create A New Job', isUserLoggedIn: isLoggedIn})
 };
 

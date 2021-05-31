@@ -5,6 +5,7 @@ import {
   login,
   postLogin,
   postRegister,
+  postLogOut,
 } from '../controllers/homeController.js';
 
 const router = express.Router();
@@ -13,6 +14,7 @@ router.get('/register', register);
 router.post('/register', postRegister);
 router.get('/log-in', login);
 router.post('/log-in', postLogin)
+router.post('/log-out', postLogOut);
 // router.get('/jobs/:page', viewJobs);
 
 export default router;
