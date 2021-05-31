@@ -90,12 +90,6 @@
   opacity: 1;
 }
 
-@media (min-width: 768px) {
-  .hero, .hero-section-2 {
-    height: 100vh;
-  }
-}
-
 /* VIEW JOBS PAGE */
 
 .interest-btn,
@@ -109,5 +103,21 @@
   opacity: 1;
   transform: scale(1.1);
 }
+.pagination-pg-number {
+  color: #000;
+}
+.pagination-pg-number:hover {
+  color: #fff;
+  background-color: #a211f8;
+}
+.active-pagination-page {
+  background-color: #a211f8;
+  color: #fff;
+}
 
-
+ /* MEDIA QUERIES */
+@media (min-width: 768px) {
+  .hero, .hero-section-2 {
+    height: 100vh;
+  }
+}

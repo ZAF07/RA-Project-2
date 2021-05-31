@@ -1,11 +1,17 @@
 import pool from '../model/db.js';
 
 export const viewJobs = async (req, res) => {
+  const page = req.query.page;
+  const limit = req.query.limit;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
   let numOfPaginationLinks = 0;
   const { rows } = await pool.query('SELECT * FROM jobs');
   console.log(' here data -->', rows); // ARRAY
 
-  const calcRows = Math.ceil(11 / 5);
+  const calcRows = Math.ceil(11 / limit);
   console.log(`Number of pages -> ${calcRows}`);
 
   // Get from DB array containing the list of jobs
@@ -13,37 +19,28 @@ export const viewJobs = async (req, res) => {
   // Takes rows returned from pg wuery
   // returns: sets numOfPaginationLinks to == number of pagination link button needed
   const calculateNumberOfPages = (arrOfJobsFromPg) => {
-    if (arrOfJobsFromPg.length <= 2) {
+    if (arrOfJobsFromPg.length <= limit) {
       numOfPaginationLinks = 1;
     } else {
-      numOfPaginationLinks = Math.ceil(arrOfJobsFromPg.length / 2);
+      numOfPaginationLinks = Math.ceil(arrOfJobsFromPg.length / limit);
     }
   };
   calculateNumberOfPages(rows);
 
   // Split into smaller arrays
-  let jobsToDisplay;
+  let jobsToDisplay = rows.slice(startIndex, endIndex);
 
-  // FIND A WAY TO PERFORM DYNAMIC PAGINATION
-  // const numberOfListings = currentPage
-
-  // Check current page param and splice array accordingly
-  const currentPage = req.params.page;
-  if (currentPage == 1) {
-    jobsToDisplay = rows.splice(0, 2);
-  } else if (currentPage == 2) {
-    jobsToDisplay = rows.splice(2, 2);
-  }
 
   console.log('HERE IS WAHT IM SENDING', jobsToDisplay);
 
   console.log('Final pagination count --> ', numOfPaginationLinks);
 
-  console.log(currentPage);
+  // console.log(currentPage);
   res.render('jobsPage/viewJobs', {
     title: 'Jobs',
     jobs: jobsToDisplay,
     numOfPaginationLinks,
+    currentPage: parseInt(page)
   });
 };
 
@@ -64,7 +61,6 @@ export const createJob = async (req, res) => {
   // res.json(req.body);
 };
 
-
 export const postInterestForJob = (req, res) => {
   if (!req.cookies) {
     res.render('homePage/login', {title: 'Log In', logInErr: 'Oopsie!! You have to log in to send an interest!'})
@@ -80,6 +76,7 @@ export const postCreateJob = (req, res) => {
       title: 'Log In',
       logInErr: 'Whoops!! You have to log in to create a new job!',
     });
+    return;
 
     // res.render('jobsPage/createJobForm', { title: 'Create A New Job' });
     // return;

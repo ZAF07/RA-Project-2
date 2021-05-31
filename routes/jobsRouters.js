@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.get('/:page', viewJobs);
+router.get('/', viewJobs);
 
 router.post('/', postInterestForJob);
 router.post('/create-job-form', postCreateJob);

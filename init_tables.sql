@@ -15,4 +15,6 @@ CREATE TABLE IF NOT EXISTS jobs (
   date DATE
 );
 
-insert into jobs (employer_id, employee_id, salary, job_location, job_cat, job_info) values(1, 1, 20, 'Pasir Ris', 'Fixing my car', 'I need help with repairing my car tonight! Sounds like a huge task but i will be doing the hard work. You just have to assist me. Or feed me if i feel hungry;)');
+-- insert into jobs (employer_id, employee_id, salary, job_location, job_cat, job_info) values(1, 1, 100, 'Buona Vista', 'Pat me to sleep', 'I just broke up with my girlfriend and finding it hard to fall asleep. My girlfriend used to pat me to sleep each night and now that shes gone, i have no one to pat me to sleep thus, no sweet dreams for me. Pat me!');
+
+update jobs set job_cat = 'Backflips' where job_id=6;
