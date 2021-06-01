@@ -1,7 +1,10 @@
 import pool from '../model/db.js';
 import jsSHA from 'jssha';
 import bcrypt from 'bcryptjs';
-import path from 'path'
+import path from 'path';
+
+
+const userInfo = {};
 
 export const home = (req, res) => {
   const isLoggedIn = req.session.isLoggedIn;
@@ -75,10 +78,14 @@ export const postLogin = async (req, res) => {
             res.redirect('jobs/create-job');
             return;
           }
-          
-         // Redirect to profile page
-        //  res.json({ msg: 'SUCCESS, Redirect to profile page', password, email, user_id });
-         res.render('user/profile', {title: 'Profile Page', email, user_id})
+
+        // Redirect to profile page
+
+        // populating global user obj for user profile controller to use after redirect
+        userInfo.email = email;
+        userInfo.userId = user_id;
+
+         res.status(200).redirect(`/profile/${user_id}`)
          return;
        }
        // If user doesn't exist render login page with error
@@ -165,4 +172,14 @@ export const postRegister = async (req, res) => {
   // Redirect to profile page or viewJobs Page
 
   // res.json({email, password})
+}
+
+export const userProfile = (req, res) => {
+  
+  // if no session ID redirect home
+  if (!req.session.isLoggedIn) {
+    res.status(403).redirect('/');
+  }
+
+  res.render('user/profile', {title: 'User ID', email:userInfo.email })
 }

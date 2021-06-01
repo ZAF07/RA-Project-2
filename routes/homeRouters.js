@@ -6,11 +6,13 @@ import {
   postLogin,
   postRegister,
   postLogOut,
+  userProfile,
 } from '../controllers/homeController.js';
 
 const router = express.Router();
 router.get('/', home);
 router.get('/register', register);
+router.get('/profile/:uid', userProfile)
 router.post('/register', postRegister);
 router.get('/log-in', login);
 router.post('/log-in', postLogin)

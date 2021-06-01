@@ -1,0 +1,41 @@
+<%- include('../partials/header.ejs') -%> 
+
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column text-center  main-nav">
+    <header class="masthead mb-auto">
+    <div class="inner">
+      <div class="w-100 d-flex justify-content-center">
+        <div class="container-fluid m-0">
+          <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <h3 class="masthead-brand">Ha!pp</h3>
+            </div>
+            <div class="col-sm-2 align-self-end">
+               <form action="/log-out" method="POST">
+                 <a class="nav-link"><small class="align-self-end"><input class=" btn log-btn mr-md-2 p-md-2 shadow rounded font-weight-bold" type="submit" value="Log out"></small></a>
+              </form>
+               
+             
+             
+            </div>
+          </div>
+        </div>
+        
+        
+      </div>
+      
+      <nav class="nav nav-masthead justify-content-center">
+        <a class="nav-link main-nav-link" href="/">Home</a>
+        <a class="nav-link main-nav-link" href="/register">Register</a>
+        <a class="nav-link main-nav-link" href="/jobs?page=1&limit=2">View Jobs</a>
+
+        <!-- <a class="nav-link main-nav-link" href="#">Log In</a> -->
+        
+      </nav>
+    </div>
+  </header>
+</div>
+
+
+<%- include('../partials/footer.ejs') -%> 
