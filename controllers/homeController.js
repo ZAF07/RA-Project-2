@@ -133,7 +133,6 @@ export const postRegister = async (req, res) => {
       
       // if user !exists in DB, hash password, save user in DB and redirect to profile page
       if (!rows.length) {
-        
         // JsSHA
         // // Hash and salt
         // const shaObj = new jsSHA('SHA-512', 'TEXT', { encoding: 'UTF8' });
@@ -149,11 +148,26 @@ export const postRegister = async (req, res) => {
           'INSERT INTO users (email, password) VALUES($1,$2) RETURNING *',
           [email, hash]
         );
+
+        const { rows: userDetails } = await pool.query(
+          'SELECT * FROM users  WHERE email=$1', [email]
+        );
+
+        // populating global user obj for user profile controller to use after redirect
+        userInfo.email = userDetails.email;
+        userInfo.userId = userDetails.user_id;
+
+        // Create session and cookie here
+        if (!req.session.isLoggedIn) {
+          req.session.isLoggedIn = true;
+        }
+        res.status(200).redirect(`/profile/${userInfo.userId}`);
+        return;
         // New User created and stored in rows
-        res.json({
-          rows,
-          toDo: 'Create a profile page where there are two pages. One for jobs posted and one for jobs accepted',
-        });
+        // res.json({
+        //   rows,
+        //   toDo: 'Create a profile page where there are two pages. One for jobs posted and one for jobs accepted',
+        // });
 
         //
 
