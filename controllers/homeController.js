@@ -78,6 +78,13 @@ export const postLogin = async (req, res) => {
             res.redirect('jobs/create-job');
             return;
           }
+          if (path.basename(referer) === 'jobs') {
+            // res.redirect('jobs/create-job');
+              res.send(
+                'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job'
+              );
+            return;
+          }
 
         // Redirect to profile page
 
