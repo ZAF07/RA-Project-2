@@ -40,24 +40,44 @@
             <tr>
    
               <td>Total Jobs Taken</td>
-              <td>22</td>
+              <td><% if (typeof jobsTaken === 'object') { %>
+                    <%= jobsTaken.length %> 
+                  <% } %></td>
 
             </tr>
 
               <td>Total Jobs Posted</td>
-              <td>35</td>
+              <td><% if (typeof jobsPosted === 'object') { %>
+                    <%= jobsPosted.length %> 
+                  <% } %></td>
+
+            </tr>
+            <tr>
+
+              <td>Jobs Pending approval (Posted)</td>
+              <td><% if (typeof jobsPendingPosted === 'object') { %>
+                    <%= jobsPendingPosted.length %> 
+                  <% } %></td>
+
+            </tr>
+            <tr>
+
+              <td>Jobs Pending approval (Applied)</td>
+              <td><% if (typeof jobsPendingApplied === 'object') { %>
+                    <%= jobsPendingApplied.length %> 
+                  <% } %></td>
 
             </tr>
             <tr>
 
               <td>Total Spent</td>
-              <td>$500</td>
+              <td>$<%= totalSpent %> </td>
 
             </tr>
             <tr>
 
               <td>Total Earned</td>
-              <td>$894</td>
+              <td>$<%= totalEarned %></td>
 
             </tr>
 

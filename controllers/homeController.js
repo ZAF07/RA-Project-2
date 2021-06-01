@@ -58,33 +58,34 @@ export const postLogin = async (req, res) => {
     }
 
     // if user exists, decrypt password, if password matches,set cookie and session then redirect to profile page
-    const {password, email, user_id} = rows[0];
-
+    const { password, email, user_id } = rows[0];
+    // populating global user obj for user profile controller to use after redirect
+    userInfo.email = email;
+    userInfo.userId = user_id;
     // compare password
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(userPassword, salt);
     console.log(bcrypt.compareSync(userPassword, password));
-    
-     bcrypt.compare(userPassword, password).then((hashResult) => {
-       if (hashResult) {
 
-         // Create session and cookie here
-          if (!req.session.isLoggedIn) {
-            req.session.isLoggedIn = true;
-          }
+    bcrypt.compare(userPassword, password).then((hashResult) => {
+      if (hashResult) {
+        // Create session and cookie here
+        if (!req.session.isLoggedIn) {
+          req.session.isLoggedIn = true;
+        }
 
-          // Check if referer of request is from /create-form, if so redirect back
-          if (path.basename(referer) === 'create-job?') {
-            res.redirect('jobs/create-job');
-            return;
-          }
-          if (path.basename(referer) === 'jobs') {
-            // res.redirect('jobs/create-job');
-              res.send(
-                'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job'
-              );
-            return;
-          }
+        // Check if referer of request is from /create-form, if so redirect back
+        if (path.basename(referer) === 'create-job?') {
+          res.redirect('jobs/create-job');
+          return;
+        }
+        if (path.basename(referer) === 'jobs') {
+          // res.redirect('jobs/create-job');
+          res.send(
+            'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job. Redirect to profile page and show dashboard'
+          );
+          return;
+        }
 
         // Redirect to profile page
 
@@ -92,16 +93,15 @@ export const postLogin = async (req, res) => {
         userInfo.email = email;
         userInfo.userId = user_id;
 
-         res.status(200).redirect(`/profile/${user_id}`)
-         return;
-       }
-       // If user doesn't exist render login page with error
-        res.render('homePage/login', {
-          title: 'Log In',
-          logInErr: 'Oops! Looks like your password did not match! Try again? ',
-        });
-     });
-    
+        res.status(200).redirect(`/profile/${user_id}`);
+        return;
+      }
+      // If user doesn't exist render login page with error
+      res.render('homePage/login', {
+        title: 'Log In',
+        logInErr: 'Oops! Looks like your password did not match! Try again? ',
+      });
+    });
   } catch (error) {
 
     // This could be server error
@@ -181,12 +181,63 @@ export const postRegister = async (req, res) => {
   // res.json({email, password})
 }
 
-export const userProfile = (req, res) => {
-  
+export const userProfile = async (req, res) => {
+  //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
+  const { rows: listOfjobsTaken } = await pool.query(
+    'SELECT * FROM jobs WHERE employee_id=$1',
+    [userInfo.userId]
+  );
+  //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
+  const { rows: listOfJobsPosted } = await pool.query(
+    'SELECT * FROM jobs WHERE employer_id=$1',
+    [userInfo.userId]
+  );
+  //SELECT * FROM jobs WHERE employer_id=user_id AND job_status='pending'-> pending approval (posted)
+  const { rows: listOfJobsPendingPosted } = await pool.query(
+    'SELECT * FROM jobs WHERE employer_id=$1 AND job_status=$2',
+    [userInfo.userId, 'pending']
+  );
+  //SELECT * FROM jobs WHERE employee_id=user_id; AND job_status='pending' -> pending approval (applied)
+  const { rows: listOfJobsPendingApplied } = await pool.query(
+    'SELECT * FROM jobs WHERE employee_id=$1 AND job_status=$2',
+    [userInfo.userId, 'pending']
+  );
+  //SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
+  const { rows: listOfAmtSpent } = await pool.query(
+    'SELECT salary FROM jobs WHERE employer_id=$1',
+    [userInfo.userId]
+  );
+  //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
+  const { rows: totalAmtEarned } = await pool.query(
+    'SELECT salary FROM jobs WHERE employee_id=$1',
+    [userInfo.userId]
+  );
+
+  // calculate total amount spent / earned
+  let totalSpent = 0;
+  let totalEarned = 0;
+
+  listOfAmtSpent.forEach((amt) => {
+    totalSpent += amt.salary;
+  });
+  totalAmtEarned.forEach((amt) => {
+    totalEarned += amt.salary;
+  });
+
   // if no session ID redirect home
   if (!req.session.isLoggedIn) {
     res.status(403).redirect('/');
   }
-
-  res.render('user/profile', {title: 'User ID', email:userInfo.email })
+  console.log(typeof listOfjobsTaken.length);
+  // res.json({ here: listOfJobsPosted.length, there: listOfjobsTaken.length });
+  res.render('user/profile', {
+    title: 'User ID',
+    email: userInfo.email,
+    jobsTaken: listOfjobsTaken,
+    jobsPosted: listOfJobsPosted,
+    jobsPendingPosted: listOfJobsPendingPosted,
+    jobsPendingApplied: listOfJobsPendingApplied,
+    totalSpent,
+    totalEarned,
+  });
 }
