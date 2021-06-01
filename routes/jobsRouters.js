@@ -2,7 +2,7 @@ import express from 'express';
 import {
   viewJobs,
   postInterestForJob,
-  postCreateJob,
+  postCreateJobForm,
   createJob,
 } from '../controllers/jobsControllers.js';
 
@@ -11,7 +11,8 @@ const router = express.Router();
 router.get('/', viewJobs);
 
 router.post('/', postInterestForJob);
-router.post('/create-job-form', postCreateJob);
+router.get('/create-job', postCreateJobForm)
+router.post('/create-job-form', postCreateJobForm);
 router.post('/create-job', createJob)
 
 export default router;

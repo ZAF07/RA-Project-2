@@ -1,6 +1,7 @@
 import pool from '../model/db.js';
 import jsSHA from 'jssha';
 import bcrypt from 'bcryptjs';
+import path from 'path'
 
 export const home = (req, res) => {
   const isLoggedIn = req.session.isLoggedIn;
@@ -26,6 +27,11 @@ export const login = (req, res) => {
 }
 
 export const postLogin = async (req, res) => {
+
+  // Check referer pathname to redirect to after successful authentication
+  const {referer} = req.headers;
+  console.log(path.basename(referer));
+
 
   // Retrieve user details
   const userEmail = req.body.email;
@@ -63,8 +69,16 @@ export const postLogin = async (req, res) => {
           if (!req.session.isLoggedIn) {
             req.session.isLoggedIn = true;
           }
+
+          // Check if referer of request is from /create-form, if so redirect back
+          if (path.basename(referer) === 'create-job?') {
+            res.redirect('jobs/create-job');
+            return;
+          }
+          
          // Redirect to profile page
-         res.json({ msg: 'SUCCESS', password, email, user_id });
+        //  res.json({ msg: 'SUCCESS, Redirect to profile page', password, email, user_id });
+         res.render('user/profile', {title: 'Profile Page', email, user_id})
          return;
        }
        // If user doesn't exist render login page with error

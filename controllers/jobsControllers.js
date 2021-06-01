@@ -72,7 +72,7 @@ export const postInterestForJob = (req, res) => {
   res.send('Send email to job creator notifyting that this person is interested in taking up the job')
 }
 
-export const postCreateJob = (req, res) => {
+export const postCreateJobForm = (req, res) => {
   const isLoggedIn = req.session.isLoggedIn;
 
   if (!req.session.isLoggedIn) {
