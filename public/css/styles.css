@@ -53,6 +53,13 @@
   opacity: .6;
 }
 
+.log-btn {
+  background-color: #fff;
+  font-size: 100%;
+  /* border-radius: 10px; */
+}
+
+
 /* HERO ( HOME )*/
 .hero {
   /* background-image: url('../images/hero.jpg'); */
