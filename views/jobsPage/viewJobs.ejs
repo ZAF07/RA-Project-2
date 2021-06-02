@@ -14,9 +14,17 @@
         <div class="d-md-flex flex-md-row justify-content-md-between flex-md-wrap">
         <% jobs.forEach(job => { %>
          <div class="card flex-md-fill p-3 shadow mb-3 cards">
-           <small>Job Category : <h2><%= job.job_cat %></h2></small>
-           <small>Location : <h6><%= job.job_location %></h6></small><hr>
+           <div class="flex-fill">
+             <small>Job Category : <h3><%= job.job_cat %></h3></small>
+           </div>
+           <div class="flex-fill h-2">
+             <small>Location : <h6><%= job.job_location %></h6></small><hr>
+           </div>
+           <div class="flex-fill h-2">
             <small class="text-left">Job Description :<h6><%= job.job_info %></h6> </small><hr>
+           </div>
+           
+            
        
            
            <div class="container mt-3 p-3">

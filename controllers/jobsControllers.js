@@ -1,11 +1,12 @@
 import pool from '../model/db.js';
 
 export const viewJobs = async (req, res) => {
-  const page = req.query.page;
-  const limit = req.query.limit;
+  const {page} = req.query;
+  const {limit} = req.query;
   const isLoggedIn = req.session.isLoggedIn;
   console.log('here ---<< ', req.session.isLoggedIn);
 
+  // indexes to determine where in retrieved result array from DB to start
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 

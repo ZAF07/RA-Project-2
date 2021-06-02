@@ -37,8 +37,8 @@ export const postLogin = async (req, res) => {
 
 
   // Retrieve user details
-  const userEmail = req.body.email;
-  const userPassword = req.body.password;
+  const {email: userEmail} = req.body;
+  const {password: userPassword} = req.body;
   console.log(userPassword);
 
   // Check if user exists
@@ -198,7 +198,9 @@ export const postRegister = async (req, res) => {
   // res.json({email, password})
 }
 
-export const userProfile = async (req, res) => {
+
+// Gather user info for profile page
+const getherUserInfo = async (userId) => {
   //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
   const { rows: listOfjobsTaken } = await pool.query(
     'SELECT * FROM jobs WHERE employee_id=$1',
@@ -241,20 +243,33 @@ export const userProfile = async (req, res) => {
     totalEarned += amt.salary;
   });
 
+   
+     userInfo.listOfjobsTaken = listOfjobsTaken;
+     userInfo.listOfJobsPosted = listOfJobsPosted;
+     userInfo.listOfJobsPendingPosted = listOfJobsPendingPosted;
+     userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
+     userInfo.totalSpent = totalSpent
+     userInfo.totalEarned = totalEarned
+}
+
+export const userProfile = async (req, res) => {
+
+  // gather user info
+  await getherUserInfo(userInfo.userId);
+
   // if no session ID redirect home
   if (!req.session.isLoggedIn) {
     res.status(403).redirect('/');
   }
-  console.log(typeof listOfjobsTaken.length);
-  // res.json({ here: listOfJobsPosted.length, there: listOfjobsTaken.length });
+
   res.render('user/profile', {
     title: 'User ID',
     email: userInfo.email,
-    jobsTaken: listOfjobsTaken,
-    jobsPosted: listOfJobsPosted,
-    jobsPendingPosted: listOfJobsPendingPosted,
-    jobsPendingApplied: listOfJobsPendingApplied,
-    totalSpent,
-    totalEarned,
+    jobsTaken: userInfo.listOfjobsTaken,
+    jobsPosted: userInfo.listOfJobsPosted,
+    jobsPendingPosted: userInfo.listOfJobsPendingPosted,
+    jobsPendingApplied: userInfo.listOfJobsPendingApplied,
+    totalSpent: userInfo.totalSpent,
+    totalEarned: userInfo.totalEarned,
   });
 }
