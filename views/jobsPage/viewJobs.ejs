@@ -4,7 +4,7 @@
   <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-3 pt-md-3">
     <div class="row">
       <div class="col-sm-2"></div>
-      <div class="col-sm-8 p-5  text-center">
+      <div class="col-sm-8 p-5 text-center">
                   <!-- Button trigger modal -->
         <button type="button" class="btn post-job-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
           Post A job
@@ -21,7 +21,7 @@
              <small>Location : <h6><%= job.job_location %></h6></small><hr>
            </div>
            <div class="flex-fill h-2">
-            <small class="text-left">Job Description :<h6><%= job.job_info %></h6> </small><hr>
+            <small class="text-left">Job Description :<h6 class="text-wrap"><%= job.job_info %></h6> </small><hr>
            </div>
            
             

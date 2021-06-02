@@ -147,4 +147,7 @@
     opacity: .5;
 
   }
+  .profile-nudge-msg {
+    width: 50%;
+  }
 }

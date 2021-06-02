@@ -128,6 +128,9 @@ export const postRegister = async (req, res) => {
   // retrieve user info from body
   const { email, password } = req.body;
 
+  // get referer path
+  const {referer} = req.headers;
+console.log(path.basename(referer));
   // check if user already exists
     try {
       const { rows } = await pool.query('SELECT * FROM users WHERE email=$1', [
@@ -156,8 +159,12 @@ export const postRegister = async (req, res) => {
           'SELECT * FROM users  WHERE email=$1', [email]
         );
 
-        // populating global user obj for user profile controller to use after redirect
-        userInfo.email = userDetails.email;
+        // set 'inactive' status to new user so ejs knows to display msg to nudge user to set/get jobs 
+        if (path.basename(referer) === 'register') {
+          userInfo.isActive = false;
+        }
+          // populating global user obj for user profile controller to use after redirect
+          userInfo.email = userDetails.email;
         userInfo.userId = userDetails.user_id;
 
         // Create session and cookie here
@@ -189,14 +196,7 @@ export const postRegister = async (req, res) => {
       console.log('ERROR FROM postRegister query --> ', error);
       res.send(error)
     }
-
-  
-  // if not user exists, hash password and save to DB
-  
-  // Redirect to profile page or viewJobs Page
-
-  // res.json({email, password})
-}
+};
 
 
 // Gather user info for profile page
@@ -242,6 +242,12 @@ const getherUserInfo = async (userId) => {
   totalAmtEarned.forEach((amt) => {
     totalEarned += amt.salary;
   });
+console.log('--->>', listOfjobsTaken.length);
+console.log('--->>', listOfJobsPosted.length);
+  if (listOfjobsTaken.length < 2) {
+    console.log('--->', listOfjobsTaken.length);
+    userInfo.isActive = false;
+  }
 
    
      userInfo.listOfjobsTaken = listOfjobsTaken;
@@ -250,7 +256,7 @@ const getherUserInfo = async (userId) => {
      userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
      userInfo.totalSpent = totalSpent
      userInfo.totalEarned = totalEarned
-}
+};
 
 export const userProfile = async (req, res) => {
 
@@ -271,5 +277,6 @@ export const userProfile = async (req, res) => {
     jobsPendingApplied: userInfo.listOfJobsPendingApplied,
     totalSpent: userInfo.totalSpent,
     totalEarned: userInfo.totalEarned,
+    isActive: userInfo.isActive,
   });
 }
