@@ -96,6 +96,7 @@
 /* REGISTER PAGE */
 .sign-in-btn {
   background-color: #a211f8;
+  color: #fff;
   opacity: .9;
   box-shadow: 2px 2px 8px 1px #000;
 }
@@ -108,12 +109,14 @@
 .interest-btn,
 .post-job-btn {
   background-color: #a211f8;
-  opacity: .8;
+  color: #fff;
+  /* opacity: .5; */
   transition: .3s;
 }
 .interest-btn:hover,
 .post-job-btn:hover {
   opacity: 1;
+  color: #fff;
   transform: scale(1.1);
 }
 .pagination-pg-number {
@@ -132,5 +135,16 @@
 @media (min-width: 768px) {
   .hero, .hero-section-2 {
     height: 100vh;
+  }
+  .cards,
+  .form-div-register {
+    max-width: 50%;
+  }
+  .interest-btn,
+  .post-job-btn {
+    background-color: #a211f8;
+    color: #fff;
+    opacity: .5;
+
   }
 }

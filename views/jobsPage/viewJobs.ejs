@@ -4,18 +4,21 @@
   <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-3 pt-md-3">
     <div class="row">
       <div class="col-sm-2"></div>
-      <div class="col-sm-8 p-5 text-center">
+      <div class="col-sm-8 p-5  text-center">
                   <!-- Button trigger modal -->
-<button type="button" class="btn post-job-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
-  Post A job
-</button>
+        <button type="button" class="btn post-job-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
+          Post A job
+        </button>
         <h3>Available Jobs:</h3>
+        <!-- <div class="d-flex flex-column align-items-center"> -->
+        <div class="d-md-flex flex-md-row justify-content-md-between flex-md-wrap">
         <% jobs.forEach(job => { %>
-         <div class="card p-3 shadow mb-3">
-           <h3></h3>
-           <h2><%= job.job_cat %></h2>
-           <p>location : <%= job.job_location %></p>
-           <small><%= job.job_info %> </small>
+         <div class="card flex-md-fill p-3 shadow mb-3 cards">
+           <small>Job Category : <h2><%= job.job_cat %></h2></small>
+           <small>Location : <h6><%= job.job_location %></h6></small><hr>
+            <small class="text-left">Job Description :<h6><%= job.job_info %></h6> </small><hr>
+       
+           
            <div class="container mt-3 p-3">
               <div class="row">
                 <div class="col-sm-12 text-center">
@@ -28,6 +31,8 @@
 
          </div>
         <% }) %>
+        </div>
+
 
         <!-- PAGINATION -->
         <% if (typeof numOfPaginationLinks === 'number') { %>
@@ -35,14 +40,14 @@
          
          <% } %>
         <% } %>
-
+          
         <nav aria-label="Page navigation example">
-          <ul class="pagination">
+          <ul class="pagination d-flex flex-wrap">
             
                             <!-- PREVIOUS PAGE PAGINATION -->
               <% if (currentPage != 1) { %>
             <li class="page-item">
-              <a class="page-link text-dark" href="/jobs?page=<%= currentPage - 1 %>&limit=2" aria-label="Previous">
+              <a class="page-link text-dark" href="/jobs?page=<%= currentPage - 1 %>&limit=4" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
@@ -51,13 +56,13 @@
               <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
                   <li class="page-item"><a class="page-link pagination-pg-number<% if (currentPage === i + 1) { %>
                    active-pagination-page
-                  <% } %>" href="/jobs?page=<%= i + 1 %>&limit=2"><%= i + 1 %></a></li>
+                  <% } %>" href="/jobs?page=<%= i + 1 %>&limit=4"><%= i + 1 %></a></li>
               <% } %>
 
                               <!-- NEXT PAGE PAGINATION -->
               <% if (currentPage != numOfPaginationLinks) { %>
                            <li class="page-item">
-              <a class="page-link text-dark" href="/jobs?page=<%= currentPage + 1 %>&limit=2" aria-label="Next">
+              <a class="page-link text-dark" href="/jobs?page=<%= currentPage + 1 %>&limit=4" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -65,6 +70,8 @@
 
           </ul>
         </nav>
+          
+        
 
       </div>
       <div class="col-sm-2"></div>
