@@ -62,6 +62,8 @@ export const postLogin = async (req, res) => {
     // populating global user obj for user profile controller to use after redirect
     userInfo.email = email;
     userInfo.userId = user_id;
+    // setting user id in cookie 
+    res.cookie('userId', user_id);
     // compare password
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(userPassword, salt);
@@ -116,6 +118,7 @@ export const postLogin = async (req, res) => {
 };
 
 export const postLogOut = (req, res) => {
+  res.clearCookie('userId');
   req.session.destroy(function (err) {
     res.redirect('/');
   });

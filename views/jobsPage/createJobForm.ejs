@@ -8,7 +8,7 @@
       <div class="col-sm-8 p-5">
         
         <form class="form-signin mt-5 pt-5 text-center" method="POST" action="/jobs/create-job">
-
+          <input type="hidden" name="userId" value="<%= userId %>">
           <h1 class="h3 mb-3 font-weight-normal">Let's Create A New Job!</h1>
           <!-- <label for="inputEmail" class="sr-only">Email address</label>
           <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">

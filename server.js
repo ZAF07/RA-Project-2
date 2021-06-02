@@ -1,5 +1,6 @@
 import express from 'express';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import pg from 'pg';
 import {} from 'dotenv/config';
 const { pool } = pg;
@@ -9,7 +10,7 @@ import homeRouters from './routes/homeRouters.js';
 import jobsRouters from './routes/jobsRouters.js';
 
 const app = express();
-
+app.use(cookieParser());
 app.use(session({
   secret: process.env.SECRET,
   resave: false,

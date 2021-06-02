@@ -48,8 +48,8 @@ export const viewJobs = async (req, res) => {
 };
 
 export const createJob = async (req, res) => {  
-  const {salary, location, jobCat, jobInfo} = req.body;
-  const values = [1, salary, location, jobCat, jobInfo];
+  const {userId, salary, location, jobCat, jobInfo} = req.body;
+  const values = [userId, salary, location, jobCat, jobInfo];
 
 
   try {
@@ -57,7 +57,8 @@ export const createJob = async (req, res) => {
         'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info) VALUES ($1, $2, $3 ,$4, $5) RETURNING *',
         values
       );
-    res.json(rows)
+    // res.json(rows)
+    res.redirect(`/profile/${userId}`)
   } catch (err) {
     res.json(err)
   }
@@ -87,6 +88,6 @@ export const postCreateJobForm = (req, res) => {
     // return;
   }
   
-  res.render('jobsPage/createJobForm', {title: 'Create A New Job', isUserLoggedIn: isLoggedIn})
+  res.render('jobsPage/createJobForm', {title: 'Create A New Job', isUserLoggedIn: isLoggedIn, userId: req.cookies.userId})
 };
 
