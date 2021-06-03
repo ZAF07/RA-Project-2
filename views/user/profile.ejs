@@ -18,6 +18,22 @@
           </div>
         <!-- </div> -->
       </section>
+
+      <section class="col-sm-12 mt-3 pt-3">
+       
+      <!-- Message after sending interest for jobs -->
+            <% if (typeof interestSuccessMsg === 'string') { %>
+                    <div class="container-fluid profile-nudge-msg">
+                      <div class="col-sm-12 text-center">
+                        <div class="pt-2 mt-2 pt-lg-1 mt-lg-1 pl-sm-2 pr-sm-2 pl-md-5 pr-md-5">
+                          <small class="alert alert-success"><%= interestSuccessMsg %></small>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+            <% } %>
+
+
                 <% if (isActive === false) { %>
                   <section class="col-sm-12 mt-3 pt-3">
        

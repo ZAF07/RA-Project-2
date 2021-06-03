@@ -1,4 +1,8 @@
 import pool from '../model/db.js';
+import sendMail from '../nodemailer/mail.js';
+import {getEmployerEmail} from '../helper/helper.js';
+
+const jobInfo = {};
 
 export const viewJobs = async (req, res) => {
   const {page} = req.query;
@@ -66,15 +70,44 @@ export const createJob = async (req, res) => {
   // res.json(req.body);
 };
 
-export const postInterestForJob = (req, res) => {
+export const postInterestForJob = async (req, res) => {
+
+  // retrieve job id from user input
+  const { jobId } = req.body;
+  const employeeId = req.cookies.userId;
 
   // If not logged in / not registered render login form with error message
   if (!req.session.isLoggedIn) {
     res.render('homePage/login', {title: 'Log In', logInErr: 'Oopsie!! You have to log in to send an interest!'})
     return;
   }
-  // If logged in, send notification to kob creater aka employer
-  res.send('Send email to job creator notifyting that this person is interested in taking up the job')
+  try {
+
+    jobInfo.employerEmail = await getEmployerEmail(jobId);
+
+    // If logged in, send notification to job creater aka employer
+    await sendMail(employeeId, jobInfo.employerEmail);
+
+    // update jobs table where job_id === jobId
+    await pool.query('UPDATE jobs SET employee_id=$1 WHERE job_id=$2', [
+      employeeId,
+      jobId,
+    ]);
+
+    // redirect user to profile page with success message
+    res.redirect(`/profile/${employeeId}`)
+    // res.send(
+    //   'Send email to job creator notifyting that this person is interested in taking up the job'
+    // );
+  } catch (error) {
+    res.redirect('/')
+    console.log('NODEMAILER ERROR --> ',error);
+  }
+
+
+  
+
+  
 }
 
 export const postCreateJobForm = (req, res) => {

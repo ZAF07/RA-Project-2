@@ -31,6 +31,7 @@
               <div class="row">
                 <div class="col-sm-12 text-center">
                   <form action="/jobs" method="POST">
+                    <input type="hidden" name="jobId" value="<%= job.job_id %>">
                     <input class="btn btn-sm interest-btn" type="submit" value="I'm Interested!">
                   </form>
                 </div>
