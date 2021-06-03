@@ -118,6 +118,9 @@ export const postLogin = async (req, res) => {
 };
 
 export const postLogOut = (req, res) => {
+  
+  // reset all global user properties
+  userInfo.isActive = true;
   res.clearCookie('userId');
   req.session.destroy(function (err) {
     res.redirect('/');
@@ -200,8 +203,8 @@ console.log(path.basename(referer));
 };
 
 
-// Gather user info for profile page
-const getherUserInfo = async (userId) => {
+// // Gather user info for profile page
+const gatherUserInfo = async (userId) => {
   //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
   const { rows: listOfjobsTaken } = await pool.query(
     'SELECT * FROM jobs WHERE employee_id=$1',
@@ -243,8 +246,8 @@ const getherUserInfo = async (userId) => {
   totalAmtEarned.forEach((amt) => {
     totalEarned += amt.salary;
   });
-console.log('--->>', listOfjobsTaken.length);
-console.log('--->>', listOfJobsPosted.length);
+
+
   if (listOfjobsTaken.length < 2) {
     console.log('--->', listOfjobsTaken.length);
     userInfo.isActive = false;
@@ -257,12 +260,32 @@ console.log('--->>', listOfJobsPosted.length);
      userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
      userInfo.totalSpent = totalSpent
      userInfo.totalEarned = totalEarned
+
+     // return object
+    //  return {
+    //    listOfjobsTaken: listOfjobsTaken,
+    //    listOfJobsPosted: listOfJobsPosted,
+    //    listOfJobsPendingPosted: listOfJobsPendingPosted,
+    //    listOfJobsPendingApplied: listOfJobsPendingApplied,
+    //    totalSpent: totalSpent,
+    //    totalEarned: totalEarned,
+    //  };
+
+     console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
+     console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
+     console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
+     console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
+     console.log('totalSpent --->>', userInfo.totalSpent);
+     console.log('totalEarned --->>', userInfo.totalEarned);
+     console.log('isActive --->> ', userInfo.isActive);
 };
 
 export const userProfile = async (req, res) => {
 
   // gather user info
-  await getherUserInfo(userInfo.userId);
+  await gatherUserInfo(userInfo.userId);
+
+  
 
   // if no session ID redirect home
   if (!req.session.isLoggedIn) {

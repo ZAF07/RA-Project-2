@@ -54,12 +54,12 @@ export const viewJobs = async (req, res) => {
 
 export const createJob = async (req, res) => {  
   const {userId, salary, location, jobCat, jobInfo} = req.body;
-  const values = [userId, salary, location, jobCat, jobInfo];
+  const values = [userId, salary, location, jobCat, jobInfo, 'pending'];
 
 
   try {
       const { rows } = await pool.query(
-        'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info) VALUES ($1, $2, $3 ,$4, $5) RETURNING *',
+        'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info, job_status) VALUES ($1, $2, $3 ,$4, $5, $6) RETURNING *',
         values
       );
     // res.json(rows)
