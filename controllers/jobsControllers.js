@@ -67,10 +67,13 @@ export const createJob = async (req, res) => {
 };
 
 export const postInterestForJob = (req, res) => {
+
+  // If not logged in / not registered render login form with error message
   if (!req.session.isLoggedIn) {
     res.render('homePage/login', {title: 'Log In', logInErr: 'Oopsie!! You have to log in to send an interest!'})
     return;
   }
+  // If logged in, send notification to kob creater aka employer
   res.send('Send email to job creator notifyting that this person is interested in taking up the job')
 }
 
