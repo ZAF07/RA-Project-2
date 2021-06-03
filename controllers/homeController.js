@@ -63,7 +63,7 @@ export const postLogin = async (req, res) => {
     userInfo.email = email;
     userInfo.userId = user_id;
     // setting user id in cookie 
-    res.cookie('userId', user_id);
+    // res.cookie('userId', user_id);
     // compare password
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(userPassword, salt);
@@ -95,7 +95,7 @@ export const postLogin = async (req, res) => {
         userInfo.email = email;
         userInfo.userId = user_id;
 
-        res.status(200).redirect(`/profile/${user_id}`);
+        res.status(200).redirect(`/profile/${userInfo.userId}`);
         return;
       }
       // If user doesn't exist render login page with error
@@ -164,8 +164,9 @@ console.log(path.basename(referer));
           userInfo.isActive = false;
         }
           // populating global user obj for user profile controller to use after redirect
-          userInfo.email = userDetails.email;
-        userInfo.userId = userDetails.user_id;
+          userInfo.email = userDetails[0].email;
+          userInfo.userId = userDetails[0].user_id;
+          console.log(`THIS IS FROM REGISTER ROUTE =--=-=-=-=> `, userDetails[0]);
 
         // Create session and cookie here
         if (!req.session.isLoggedIn) {
@@ -279,4 +280,4 @@ export const userProfile = async (req, res) => {
     totalEarned: userInfo.totalEarned,
     isActive: userInfo.isActive,
   });
-}
+};
