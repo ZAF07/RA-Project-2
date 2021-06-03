@@ -63,7 +63,7 @@ export const postLogin = async (req, res) => {
     userInfo.email = email;
     userInfo.userId = user_id;
     // setting user id in cookie 
-    // res.cookie('userId', user_id);
+    res.cookie('userId', user_id);
     // compare password
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(userPassword, salt);
