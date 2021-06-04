@@ -187,15 +187,6 @@ console.log(path.basename(referer));
         }
         res.status(200).redirect(`/profile/${userInfo.userId}`);
         return;
-        // New User created and stored in rows
-        // res.json({
-        //   rows,
-        //   toDo: 'Create a profile page where there are two pages. One for jobs posted and one for jobs accepted',
-        // });
-
-        //
-
-        return;
       }
       // redirect to register page with err msg if user already exists
       res.render('homePage/register', {

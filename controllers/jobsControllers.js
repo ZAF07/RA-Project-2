@@ -5,8 +5,7 @@ import {getEmployerEmail} from '../helper/helper.js';
 const jobInfo = {};
 
 export const viewJobs = async (req, res) => {
-  const {page} = req.query;
-  const {limit} = req.query;
+  const {page, limit} = req.query;
   const isLoggedIn = req.session.isLoggedIn;
   console.log('here ---<< ', req.session.isLoggedIn);
 
