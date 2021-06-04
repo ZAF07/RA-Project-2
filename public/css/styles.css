@@ -131,6 +131,14 @@
   color: #fff;
 }
 
+/* PROFILE */
+
+img {
+  width:78px;
+  height: 88px;
+  border-radius: 50%;
+}
+
  /* MEDIA QUERIES */
 @media (min-width: 768px) {
   .hero, .hero-section-2 {

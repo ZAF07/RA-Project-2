@@ -58,13 +58,25 @@ export const createJob = async (req, res) => {
 
 
   try {
-      const { rows } = await pool.query(
+
+    // create job in jobs table
+      const { rows: newJobInfo } = await pool.query(
         'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info, job_status) VALUES ($1, $2, $3 ,$4, $5, $6) RETURNING *',
         values
       );
+      console.log(newJobInfo[0]);
+
+    // // create pending job status in pending_jobs status
+    // const { rows: pendingJobsPosted } = await pool.query(
+    //   'INSERT INTO pending_jobs (job_id) VALUES($1)',
+    //   [newJobInfo[0].job_id]
+    // );
+
+
     // res.json(rows)
     res.redirect(`/profile/${userId}`)
   } catch (err) {
+    console.log('Error from createJob -->> ', err);
     res.json(err)
   }
   // res.json(req.body);
@@ -82,20 +94,30 @@ export const postInterestForJob = async (req, res) => {
     return;
   }
   try {
-
     jobInfo.employerEmail = await getEmployerEmail(jobId);
 
     // If logged in, send notification to job creater aka employer
     await sendMail(employeeId, jobInfo.employerEmail);
 
     // update jobs table where job_id === jobId
-    await pool.query('UPDATE jobs SET employee_id=$1 WHERE job_id=$2', [
-      employeeId,
-      jobId,
-    ]);
+    // await pool.query('UPDATE jobs SET employee_id=$1 WHERE job_id=$2', [
+    //   employeeId,
+    //   jobId,
+    // ]);
+
+    // Update pending_jobs table to show this job as currently pending
+    // await pool.query('UPDATE pending_jobs SET employee_id=$1 WHERE job_id=$2', [
+    //   employeeId,
+    //   jobId,
+    // ]);
+    // create new pending job row in pending_jobs table
+    const { rows: pendingJobsPosted } = await pool.query(
+      'INSERT INTO pending_jobs (job_id, employee_id) VALUES($1, $2)',
+      [jobId, employeeId]
+    );
 
     // redirect user to profile page with success message
-    res.redirect(`/profile/${employeeId}`)
+    res.redirect(`/profile/${employeeId}`);
     // res.send(
     //   'Send email to job creator notifyting that this person is interested in taking up the job'
     // );
@@ -104,10 +126,6 @@ export const postInterestForJob = async (req, res) => {
     console.log('NODEMAILER ERROR --> ',error);
   }
 
-
-  
-
-  
 }
 
 export const postCreateJobForm = (req, res) => {
@@ -128,3 +146,17 @@ export const postCreateJobForm = (req, res) => {
   res.render('jobsPage/createJobForm', {title: 'Create A New Job', isUserLoggedIn: isLoggedIn, userId: req.cookies.userId})
 };
 
+export const jobDetails = (req, res) => {
+
+
+  // If not logged in / not registered render login form with error message
+  if (!req.session.isLoggedIn) {
+    res.render('homePage/login', {
+      title: 'Log In',
+      logInErr: 'Oopsie!! You have to log in to send an interest!',
+    });
+    return;
+  }
+
+  res.render('jobsPage/jobdetails', { title: 'Details' });
+}

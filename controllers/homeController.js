@@ -2,6 +2,7 @@ import pool from '../model/db.js';
 import jsSHA from 'jssha';
 import bcrypt from 'bcryptjs';
 import path from 'path';
+import {getJobsPendingInterest} from '../helper/helper.js';
 
 
 const userInfo = {};
@@ -33,7 +34,7 @@ export const postLogin = async (req, res) => {
 
   // Check referer pathname to redirect to after successful authentication
   const {referer} = req.headers;
-  console.log(path.basename(referer));
+  console.log('REFERER --->>>> ',referer);
 
 
   // Retrieve user details
@@ -88,6 +89,12 @@ export const postLogin = async (req, res) => {
           );
           return;
         }
+        // if (referer === 'http://localhost:3000/jobs/details/1') {
+        //   // res.redirect('jobs/create-job');
+        //   res.render('jobsPage/details', {title: 'Details'});
+        //   return;
+        // }
+
 
         // Redirect to profile page
 
@@ -173,6 +180,8 @@ console.log(path.basename(referer));
 
         // Create session and cookie here
         if (!req.session.isLoggedIn) {
+          // setting user id in cookie
+          res.cookie('userId', userInfo.userId);
           req.session.isLoggedIn = true;
         }
         res.status(200).redirect(`/profile/${userInfo.userId}`);
@@ -205,12 +214,12 @@ console.log(path.basename(referer));
 
 // // Gather user info for profile page
 const gatherUserInfo = async (userId) => {
-  //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
-  const { rows: listOfjobsTaken } = await pool.query(
-    'SELECT * FROM jobs WHERE employee_id=$1',
-    [userInfo.userId]
-  );
-  //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
+  // //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
+  // const { rows: listOfjobsCompleted } = await pool.query(
+  //   'SELECT * FROM jobs WHERE employee_id=$1',
+  //   [userInfo.userId]
+  // );
+  // //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
   const { rows: listOfJobsPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1',
     [userInfo.userId]
@@ -220,44 +229,40 @@ const gatherUserInfo = async (userId) => {
     'SELECT * FROM jobs WHERE employer_id=$1 AND job_status=$2',
     [userInfo.userId, 'pending']
   );
-  //SELECT * FROM jobs WHERE employee_id=user_id; AND job_status='pending' -> pending approval (applied)
-  const { rows: listOfJobsPendingApplied } = await pool.query(
-    'SELECT * FROM jobs WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'pending']
-  );
+
   //SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
   const { rows: listOfAmtSpent } = await pool.query(
     'SELECT salary FROM jobs WHERE employer_id=$1',
     [userInfo.userId]
   );
-  //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
-  const { rows: totalAmtEarned } = await pool.query(
-    'SELECT salary FROM jobs WHERE employee_id=$1',
-    [userInfo.userId]
-  );
+  // //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
+  // const { rows: totalAmtEarned } = await pool.query(
+  //   'SELECT salary FROM jobs WHERE employee_id=$1',
+  //   [userInfo.userId]
+  // );
 
   // calculate total amount spent / earned
   let totalSpent = 0;
   let totalEarned = 0;
 
-  listOfAmtSpent.forEach((amt) => {
-    totalSpent += amt.salary;
-  });
-  totalAmtEarned.forEach((amt) => {
-    totalEarned += amt.salary;
-  });
+  // listOfAmtSpent.forEach((amt) => {
+  //   totalSpent += amt.salary;
+  // });
+  // totalAmtEarned.forEach((amt) => {
+  //   totalEarned += amt.salary;
+  // });
 
 
-  if (listOfjobsTaken.length < 2) {
-    console.log('--->', listOfjobsTaken.length);
-    userInfo.isActive = false;
-  }
+  // if (listOfjobsCompleted.length < 2) {
+  //   console.log('--->', listOfjobsCompleted.length);
+  //   userInfo.isActive = false;
+  // }
 
    
-     userInfo.listOfjobsTaken = listOfjobsTaken;
-     userInfo.listOfJobsPosted = listOfJobsPosted;
-     userInfo.listOfJobsPendingPosted = listOfJobsPendingPosted;
-     userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
+    //  userInfo.listOfjobsCompleted = listOfjobsCompleted;
+    userInfo.listOfJobsPosted = listOfJobsPosted;
+    userInfo.listOfJobsPendingPosted = listOfJobsPendingPosted;
+    userInfo.listOfJobsPendingApplied = await getJobsPendingInterest(userId);
      userInfo.totalSpent = totalSpent
      userInfo.totalEarned = totalEarned
 
@@ -271,10 +276,10 @@ const gatherUserInfo = async (userId) => {
     //    totalEarned: totalEarned,
     //  };
 
-     console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
-     console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
+    //  console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
+    //  console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
      console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
-     console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
+    //  console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
      console.log('totalSpent --->>', userInfo.totalSpent);
      console.log('totalEarned --->>', userInfo.totalEarned);
      console.log('isActive --->> ', userInfo.isActive);
@@ -295,7 +300,7 @@ export const userProfile = async (req, res) => {
   res.render('user/profile', {
     title: 'User ID',
     email: userInfo.email,
-    jobsTaken: userInfo.listOfjobsTaken,
+    jobsTaken: userInfo.listOfjobsCompleted,
     jobsPosted: userInfo.listOfJobsPosted,
     jobsPendingPosted: userInfo.listOfJobsPendingPosted,
     jobsPendingApplied: userInfo.listOfJobsPendingApplied,
