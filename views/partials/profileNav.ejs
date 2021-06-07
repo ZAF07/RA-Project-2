@@ -1,41 +1,22 @@
 <%- include('../partials/header.ejs') -%> 
 
 
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column text-center  main-nav">
-    <header class="masthead mb-auto">
-    <div class="inner">
-      <div class="w-100 d-flex justify-content-center">
-        <div class="container-fluid m-0">
-          <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <h3 class="masthead-brand">Ha!pp</h3>
-            </div>
-            <div class="col-sm-2 align-self-end">
-               <form action="/log-out" method="POST">
-                 <a class="nav-link"><small class="align-self-end"><input class=" btn log-btn mr-md-2 p-md-2 shadow rounded font-weight-bold" type="submit" value="Log out"></small></a>
-              </form>
-               
-             
-             
-            </div>
-          </div>
+
+    <div class="btn-group mt-2 p-2" role="group"                  aria-label="Button group with nested dropdown">
+      <!-- <button type="button" class="btn btn-secondary">1</button>
+      <button type="button" class="btn btn-secondary">2</button> -->
+
+      <div class="btn-group" role="group">
+        <button id="btnGroupDrop1" type="button" class="btn  profile-log-out-btn  dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Manage Jobs
+        </button>
+        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+          <a class="dropdown-item" href="/jobs/details/<%= userId%>">Jobs Applied</a>
+          <a class="dropdown-item" href="#">Jobs Posted</a>
         </div>
-        
-        
       </div>
-      
-      <nav class="nav nav-masthead justify-content-center">
-        <a class="nav-link main-nav-link" href="/">Home</a>
-        <a class="nav-link main-nav-link" href="/register">Register</a>
-        <a class="nav-link main-nav-link" href="/jobs?page=1&limit=4">View Jobs</a>
-
-        <!-- <a class="nav-link main-nav-link" href="#">Log In</a> -->
-        
-      </nav>
+      <a class="btn btn-secondary" href="/log-out">Log Out</a>
     </div>
-  </header>
-</div>
-
+          
 
 <%- include('../partials/footer.ejs') -%> 

@@ -23,20 +23,28 @@ const getEmployerEmail = async (jobId) => {
 
 };
 
-const getJobsPendingInterest = async (userId) => {
+const getJobsPendingInterest = async (listOfPendingJobIds) => {
   const listOfPendingJobs = [];
 
-  // Retrieve all jobs from pending_jobs table relating to user
-  // const {rows: listOfPendingJobIds} = await pool.query('SELECT job_id FROM pending_jobs WHERE employee_id=$1', [userId]);
+
 
   // Retrieve all jobs relating to user from jobs table based on returned jobs_id
-  listOfPendingJobIds.forEach(jobId => {
-    listOfPendingJobs.push(
-      pool.query('SELECT * FROM jobs WHERE job_id=$1', [jobId.job_id])
-    );
-  })
+//  await listOfPendingJobIds.forEach(async (jobId) => {
+//     const {rows: jobsReturned} = await pool.query('SELECT * FROM jobs WHERE job_id=$1', [jobId.job_id])
+//     console.log('what the heck', jobsReturned);
+//       listOfPendingJobs.push(jobsReturned)
+//   })
 
-  return listOfPendingJobs;
+  for (let i = 0; i < listOfPendingJobIds.length; i++) {
+     const {rows: jobsReturned} = await pool.query('SELECT * FROM jobs WHERE job_id=$1', [jobId.job_id])
+     listOfPendingJobs.push(jobsReturned);
+  }
+  
+
+    console.log('putiing ', listOfPendingJobs);
+
+  // console.log('THE RESULT --> ',listOfPendingJobs);
+  // return listOfPendingJobs;
 };
 
 // const getJobsPendingPosted = async (userId) => {

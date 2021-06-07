@@ -25,6 +25,7 @@ export default async function main(user, employerEmail) {
     <br> 
     --> employee ID ${user}
     --> should send mail to ${employerEmail}
+    --> Link: http://localhost:3000/jobs/details/${user}
     </b>`, // html body
   });
 

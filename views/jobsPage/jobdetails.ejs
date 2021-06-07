@@ -1,39 +1,47 @@
 <%- include('../partials/header.ejs') %> 
-<%- include('../partials/profileNav.ejs') %>
 
+  
 
    <div class="jumbotron jumbotron-fluid">
+     <span><a class="back-btn-top" href="/profile/<%=userId%>"><i class="bi bi-arrow-return-left ml-5 back-icon"></i></a></span>
+     
     <div class="container">
-      <h1 class="display-5">Fluid jumbotron</h1>
-      <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+      <h1 class="display-5">Jobs Applied</h1>
+      <p class="lead">This are the jobs you've applied for. Hang in there the employer would get back to you soon.</p>
     </div>
   </div>
 
- <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-5 pt-md-5 form-div-register">
+ <div class="container-fluid mt-sm-1 pt-sm-1 mt-md-5 pt-md-5 form-div-register">
     <div class="row">
-      <div class="col-sm-2"></div>
-      <div class="col-sm-8 col-md-12 p-5">
-        <div class="card mb-3 mt-3 pt-3">
-          <!-- <img src="..." class="card-img-top" alt="..."> -->
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-            <p class="card-text"><small class="text-muted">Posted 3 mins ago</small></p>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8 col-md-12 p-5">
+          <% listOfJobsPendingApplied.forEach(job => { %>
+          <div class="card mb-3 mt-3 pt-3">
+            <!-- <img src="..." class="card-img-top" alt="map goes here"> -->
+            
+              
+            
+              <div class="card-body">
+                <h5 class="card-title"><%= job.job_cat %></h5>
+                <p class="card-text"><%= job.job_info %></p>
+                <p class="card-text"><small class="text-muted">You would be paid $<%=job.salary%></small></p>
+              </div>
+            
           </div>
-        </div>
+          <% }) %>    
 
-        <div class="d-flex justify-items-around">
+        <div class="d-flex justify-items-between">
                       <!-- <div> -->
                         <form action="/jobs" method="POST">
                     
-                    <input class="btn btn-sm interest-btn" type="submit" value="I'll Take it ! ⭐️">
+                    <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⭐️">
                   </form>
                       <!-- </div> -->
 
                       <!-- <div class="ml-auto"> -->
                          <form class="ml-auto" action="/jobs" method="POST">
                     
-                    <input class="btn btn-sm interest-btn" type="submit" value="Next time! 😌">
+                    <input class="btn btn-sm interest-btn" type="submit" value="Cancel Job! 😌">
                   </form>
                       <!-- </div> -->
                   

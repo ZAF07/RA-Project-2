@@ -1,13 +1,13 @@
 import pool from '../model/db.js';
 import sendMail from '../nodemailer/mail.js';
-import {getEmployerEmail} from '../utils/helper.js';
+import { getEmployerEmail, getJobsPendingInterest } from '../utils/helper.js';
 
 const jobInfo = {};
 
 export const viewJobs = async (req, res) => {
-  const {page, limit} = req.query;
-  const {userId} = req.cookies;
-  console.log('USER IS HERE viewJobs --->> ',userId);
+  const { page, limit } = req.query;
+  const { userId } = req.cookies;
+  console.log('USER IS HERE viewJobs --->> ', userId);
   const isLoggedIn = req.session.isLoggedIn;
   console.log('is logged in ? ---<< ', req.session.isLoggedIn);
 
@@ -15,6 +15,13 @@ export const viewJobs = async (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   let numOfPaginationLinks = 0;
+
+  // if (!req.session.isLoggedIn) {
+  //   const { rows } = await pool.query(
+  //     'SELECT * FROM jobs WHERE job_status=$1',
+  //     ['open']
+  //   );
+  // }
 
   // Select only jobs with 'OPEN' status and != current userId
   const { rows } = await pool.query(
@@ -42,7 +49,6 @@ export const viewJobs = async (req, res) => {
   // Split into smaller arrays
   let jobsToDisplay = rows.slice(startIndex, endIndex);
 
-
   console.log('HERE IS WAHT IM SENDING', jobsToDisplay);
 
   console.log('Final pagination count --> ', numOfPaginationLinks);
@@ -54,6 +60,7 @@ export const viewJobs = async (req, res) => {
     jobs: jobsToDisplay,
     numOfPaginationLinks,
     currentPage: parseInt(page),
+    userId
   });
 };
 
@@ -152,8 +159,8 @@ export const postCreateJobForm = (req, res) => {
   res.render('jobsPage/createJobForm', {title: 'Create A New Job', isUserLoggedIn: isLoggedIn, userId: req.cookies.userId})
 };
 
-export const jobDetails = (req, res) => {
-
+export const jobDetails = async (req, res) => {
+  const { userId } = req.cookies;
 
   // If not logged in / not registered render login form with error message
   if (!req.session.isLoggedIn) {
@@ -164,5 +171,29 @@ export const jobDetails = (req, res) => {
     return;
   }
 
-  res.render('jobsPage/jobdetails', { title: 'Details' });
+  // store all pending jobs applied here
+  // const listOfJobsPendingApplied = await getJobsPendingInterest(userId);
+
+  // Retrieve all jobs from pending_jobs table relating to user
+  // const { rows: listOfPendingJobIds } = await pool.query(
+  //   'SELECT job_id FROM job_details WHERE employee_id=$1',
+  //   [userId]
+  // );
+  
+    
+
+  const { rows: listOfJobsPendingApplied } = await pool.query(
+    'SELECT job_info, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
+    [userId, 'interested']
+  );
+
+ 
+  
+
+  res.render('jobsPage/jobdetails', {
+    title: 'Details',
+    userId: userId,
+    listOfJobsPendingApplied,
+  });
 }
+

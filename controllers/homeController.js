@@ -9,11 +9,12 @@ import path from 'path';
 const userInfo = {};
 
 export const home = (req, res) => {
+  const {userId} = req.cookies;
   const isLoggedIn = req.session.isLoggedIn;
   res.render('homePage/home', {
     title: 'home',
     isUserLoggedIn: isLoggedIn,
-    instructions: 'Create Home Page. Describe what this page is about.',
+    userId
   });
 };
 
@@ -88,6 +89,7 @@ export const postLogin = async (req, res) => {
           res.send(
             'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job. Redirect to profile page and show dashboard'
           );
+
           return;
         }
         // if (referer === 'http://localhost:3000/jobs/details/1') {
@@ -270,6 +272,7 @@ const gatherUserInfo = async (userId) => {
   userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
   userInfo.totalSpent = totalSpent;
   userInfo.totalEarned = totalEarned;
+  userInfo.userId = userId;
 
   // return object
   //  return {
@@ -302,6 +305,7 @@ export const userProfile = async (req, res) => {
     res.status(403).redirect('/');
   }
 
+  console.log('this hsoudf fsdj ==> ', userInfo.userId);
   res.render('user/profile', {
     title: 'User ID',
     email: userInfo.email,
@@ -313,5 +317,6 @@ export const userProfile = async (req, res) => {
     totalEarned: userInfo.totalEarned,
     isActive: userInfo.isActive,
     isUserLoggedIn: true,
+    userId: userInfo.userId
   });
 };
