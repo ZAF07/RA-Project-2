@@ -171,21 +171,12 @@ export const jobDetails = async (req, res) => {
     return;
   }
 
-  // store all pending jobs applied here
-  // const listOfJobsPendingApplied = await getJobsPendingInterest(userId);
-
-  // Retrieve all jobs from pending_jobs table relating to user
-  // const { rows: listOfPendingJobIds } = await pool.query(
-  //   'SELECT job_id FROM job_details WHERE employee_id=$1',
-  //   [userId]
-  // );
-  
-    
-
   const { rows: listOfJobsPendingApplied } = await pool.query(
-    'SELECT job_info, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
+    'SELECT jobs.job_id, job_info, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
     [userId, 'interested']
   );
+
+  
 
  
   
@@ -193,7 +184,17 @@ export const jobDetails = async (req, res) => {
   res.render('jobsPage/jobdetails', {
     title: 'Details',
     userId: userId,
+    jobId: listOfJobsPendingApplied.length ? listOfJobsPendingApplied[0].job_id : null,
     listOfJobsPendingApplied,
   });
+}
+
+export const deleteOneJob = async (req, res) => {
+  const {jobId, userId} = req.body;
+
+  const {rows: deletedJobIntest} = pool.query('DELETE FROM job_details WHERE job_id=$1 AND employee_id=$2 RETURNING *', [jobId, userId]);
+
+
+  res.redirect(`/profile/${userId}`);
 }
 

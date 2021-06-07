@@ -119,7 +119,17 @@
   /* opacity: .5; */
   transition: .3s;
 }
+
+
+.details-cancel-btn {
+  opacity: .5;
+  background-color: #a211f8;
+  color: #fff;
+  transition: .3s;
+}
+
 .interest-btn:hover,
+.details-cancel-btn:hover,
 .post-job-btn:hover {
   opacity: 1;
   color: #fff;
@@ -175,6 +185,10 @@ img {
   color: #a211f8;
 }
 
+.cancel-job-div {
+  margin-top: 6px;
+}
+
 
  /* MEDIA QUERIES */
 @media (min-width: 768px) {
@@ -185,7 +199,7 @@ img {
   .form-div-register {
     max-width: 50%;
   }
-  .interest-btn,
+  .details-cancel-btn,
   .post-job-btn {
     background-color: #a211f8;
     color: #fff;
@@ -195,4 +209,11 @@ img {
   .profile-nudge-msg {
     width: 50%;
   }
+  .manage-action-btn {
+  display: flex;
+  justify-content: space-between;
+}
+.cancel-job-div {
+  margin-top: 0;
+}
 }

@@ -15,8 +15,10 @@
     <div class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-8 col-md-12 p-5">
+      <% if (listOfJobsPendingApplied.length) { %>
+      
           <% listOfJobsPendingApplied.forEach(job => { %>
-          <div class="card mb-3 mt-3 pt-3">
+          <div class="card mb-3 mt-3 pt-3 shadow">
             <!-- <img src="..." class="card-img-top" alt="map goes here"> -->
             
               
@@ -26,32 +28,67 @@
                 <p class="card-text"><%= job.job_info %></p>
                 <p class="card-text"><small class="text-muted">You would be paid $<%=job.salary%></small></p>
               </div>
+              <div class="container">
+                <div class="row">
+                 <div class="col-sm-12 p-3 manage-action-btn">
+                    <div>
+                    <form action="/jobs" method="POST">
+                      <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⭐️">
+                    </form>
+                    </div>
+
+                    <div class="cancel-job-div">
+                      <form class=""  action="/jobs" method="POST">
+
+              <!-- Button trigger modal -->
+        <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
+          Cancel Job 😌"
+        </button>
+                    </form>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
             
           </div>
-          <% }) %>    
+          <% }) %>  
+        <% } else { %>
+          <h3>You have no pending jobs!</h3>
+       <% } %>    
+<!-- end foreach -->
 
-        <div class="d-flex justify-items-between">
-                      <!-- <div> -->
-                        <form action="/jobs" method="POST">
-                    
-                    <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⭐️">
-                  </form>
-                      <!-- </div> -->
-
-                      <!-- <div class="ml-auto"> -->
-                         <form class="ml-auto" action="/jobs" method="POST">
-                    
-                    <input class="btn btn-sm interest-btn" type="submit" value="Cancel Job! 😌">
-                  </form>
-                      <!-- </div> -->
-                  
-        </div>
-  
       </div>
       <div class="col-sm-2"></div>
     </div>
   </div>
 
-
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Are you sure you want to cancel this job?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Want to wait a little more to decide? The employer has already received your interest.You'd get a response soon!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+        <form action="/jobs/delete" method="post">
+          <input type="hidden" name="jobId" value="<%=jobId%>">
+          <input type="hidden" name="userId" value="<%=userId%>">
+          <input class="btn btn-sm interest-btn" type="submit" value="Cancel anyway">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL -->
 <%- include('../partials/footer.ejs') %> 
 
