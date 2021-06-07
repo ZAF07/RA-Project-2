@@ -15,23 +15,26 @@ export const viewJobs = async (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   let numOfPaginationLinks = 0;
+  let returnedListOfJobsAvailable;
 
-  // if (!req.session.isLoggedIn) {
-  //   const { rows } = await pool.query(
-  //     'SELECT * FROM jobs WHERE job_status=$1',
-  //     ['open']
-  //   );
-  // }
+  if (!req.session.isLoggedIn) {
+    const { rows: notLoggedIn } = await pool.query(
+      'SELECT * FROM jobs WHERE job_status=$1',
+      ['open']
+    );
+    returnedListOfJobsAvailable = notLoggedIn;
+  } else {
+    // Select only jobs with 'OPEN' status and != current userId
+    const { rows: loggedIn } = await pool.query(
+      'SELECT * FROM jobs WHERE job_status=$1 AND employer_id <>$2',
+      ['open', userId]
+    );
+    console.log(' here data user not logged in -->', loggedIn); // ARRAY
+    returnedListOfJobsAvailable = loggedIn;
+  }
 
-  // Select only jobs with 'OPEN' status and != current userId
-  const { rows } = await pool.query(
-    'SELECT * FROM jobs WHERE job_status=$1 AND employer_id <>$2',
-    ['open', userId]
-  );
-  console.log(' here data -->', rows); // ARRAY
 
-  // const calcRows = Math.ceil(11 / limit);
-  // console.log(`Number of pages -> ${calcRows}`);
+
 
   // Get from DB array containing the list of jobs
   // Calculate number of pagination pages needed if i want to display 5 jobs per page
@@ -44,10 +47,10 @@ export const viewJobs = async (req, res) => {
       numOfPaginationLinks = Math.ceil(arrOfJobsFromPg.length / limit);
     }
   };
-  calculateNumberOfPages(rows);
+  calculateNumberOfPages(returnedListOfJobsAvailable);
 
   // Split into smaller arrays
-  let jobsToDisplay = rows.slice(startIndex, endIndex);
+  let jobsToDisplay = returnedListOfJobsAvailable.slice(startIndex, endIndex);
 
   console.log('HERE IS WAHT IM SENDING', jobsToDisplay);
 
