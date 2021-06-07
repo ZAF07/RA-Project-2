@@ -165,7 +165,7 @@ export const jobDetails = async (req, res) => {
     dataToSend = listOfJobsPendingApplied;
   } else {
       const { rows: listOfJobsPendingPosted } = await pool.query(
-        'select email, job_info FROM users INNER JOIN job_details on job_details.employee_id=users.user_id and job_details.job_status=$2 INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=$1',
+        'select email, job_info, salary, job_cat FROM users INNER JOIN job_details on job_details.employee_id=users.user_id and job_details.job_status=$2 INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=$1',
         [userId, 'interested']
       );
       dataToSend = listOfJobsPendingPosted;

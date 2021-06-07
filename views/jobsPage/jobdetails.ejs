@@ -4,7 +4,7 @@
 
    <div class="jumbotron jumbotron-fluid text-white jumb">
      <span><a class="back-btn-top" href="/profile/<%=userId%>"><i class="bi bi-arrow-return-left ml-5 back-icon"></i></a></span>
-     
+     <!-- if page applied -->
       <% if (page === 'applied') { %>
           <div class="container">
       
@@ -18,13 +18,19 @@
               <p class="lead">This are the jobs you've posted. Manage theses jobs here. Accept or reject applicants.</p>
             </div>
       <%}%>
+      <!-- end if -->
   </div>
       
 <div class="container">
   <div class="row">
     <div class="col-sm-2"></div>
     <div class="col-sm-8 text-center">
-      <h2>Manage Jobs</h2>
+      <% if (page === 'applied') { %>
+       <h2>Manage Applied Jobs</h2>
+      <% } else { %>
+        <h2>Manage Jobs Posted</h2>
+      <% } %> 
+      
     </div>
     <div class="col-sm-2"></div>
   </div>
@@ -45,14 +51,24 @@
               <div class="card-body">
                 <h5 class="card-title"><%= job.job_cat %></h5>
                 <p class="card-text"><%= job.job_info %></p>
-                <p class="card-text"><small class="text-muted">You would be paid $<%=job.salary%></small></p>
+                <% if (page === 'posted') { %>
+                 <p class="card-text"><small>Applicant Email:</small> <%=job.email%></p>
+                <% } %>
+                <%if (page === 'applied') { %>
+                  <p class="card-text"><small class="text-muted">You would be paid $<%=job.salary%></small></p>
+                <% } else { %>
+                  <p class="card-text"><small class="text-muted">You are offering $<%=job.salary%></small></p>
+                <% } %>
+                <hr>
               </div>
               <div class="container">
                 <div class="row">
+                  <!-- if pages = applied -->
                   <% if (page === 'applied') { %>
                       <div class="col-sm-12 p-3 manage-action-btn">
                         <div>
                           <form action="/jobs" method="POST">
+                            <input type="hidden" name="jobId" value="<%= job.job_id %>">
                             <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⏰">
                           </form>
                         </div>
