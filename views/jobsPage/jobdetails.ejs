@@ -164,10 +164,10 @@
       <div class="modal-footer">
         <button type="button" class="btn" data-dismiss="modal">Close</button>
         <!-- <button type="button" class="btn btn-primary">Understood</button> -->
-        <form action="/jobs/delete" method="post">
+        <form action="/jobs/reject" method="post">
           <input type="hidden" name="jobId" value="<%=jobId%>">
           <input type="hidden" name="userId" value="<%=userId%>">
-          <input class="btn btn-sm interest-btn" type="submit" value="Cancel anyway">
+          <input class="btn btn-sm interest-btn" type="submit" value="Reject anyway">
         </form>
       </div>
     </div>
