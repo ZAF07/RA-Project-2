@@ -33,9 +33,6 @@ export const viewJobs = async (req, res) => {
     returnedListOfJobsAvailable = loggedIn;
   }
 
-
-
-
   // Get from DB array containing the list of jobs
   // Calculate number of pagination pages needed if i want to display 5 jobs per page
   // Takes rows returned from pg wuery
@@ -108,29 +105,11 @@ export const postInterestForJob = async (req, res) => {
     // If logged in, send notification to job creater aka employer
     await sendMail(employeeId, jobInfo.employerEmail);
 
-    // update jobs table where job_id === jobId
-    // await pool.query('UPDATE jobs SET employee_id=$1 WHERE job_id=$2', [
-    //   employeeId,
-    //   jobId,
-    // ]);
-
-    // Update pending_jobs table to show this job as currently pending
-    // await pool.query('UPDATE pending_jobs SET employee_id=$1 WHERE job_id=$2', [
-    //   employeeId,
-    //   jobId,
-    // ]);
-    // create new pending job row in pending_jobs table
-    // const { rows: pendingJobsPosted } = await pool.query(
-    //   'INSERT INTO pending_jobs (job_id, employee_id) VALUES($1, $2)',
-    //   [jobId, employeeId]
-    // );
-
     // create new row in 'job_details' table (sending an interest for a job)
     const { rows: pendingJobsPosted } = await pool.query(
       'INSERT INTO job_details (job_id, employee_id, job_status) VALUES($1, $2, $3)',
       [jobId, employeeId, 'interested']
     );
-
 
     // redirect user to profile page with success message
     res.redirect(`/profile/${employeeId}`);
@@ -163,8 +142,11 @@ export const postCreateJobForm = (req, res) => {
 };
 
 export const jobDetails = async (req, res) => {
+  const {details} = req.query;
   const { userId } = req.cookies;
+  let dataToSend;
 
+  console.log('This is the query for details page -->', details);
   // If not logged in / not registered render login form with error message
   if (!req.session.isLoggedIn) {
     res.render('homePage/login', {
@@ -174,21 +156,28 @@ export const jobDetails = async (req, res) => {
     return;
   }
 
-  const { rows: listOfJobsPendingApplied } = await pool.query(
-    'SELECT jobs.job_id, job_info, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
-    [userId, 'interested']
-  );
+  // check if user looking for job applied or posted information
+  if (details === 'applied') {
+    const { rows: listOfJobsPendingApplied } = await pool.query(
+      'SELECT jobs.job_id, job_info, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
+      [userId, 'interested']
+    );
+    dataToSend = listOfJobsPendingApplied;
+  } else {
+      const { rows: listOfJobsPendingPosted } = await pool.query(
+        'select email, job_info FROM users INNER JOIN job_details on job_details.employee_id=users.user_id and job_details.job_status=$2 INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=$1',
+        [userId, 'interested']
+      );
+      dataToSend = listOfJobsPendingPosted;
+  }
 
-  
-
- 
-  
 
   res.render('jobsPage/jobdetails', {
-    title: 'Details',
+    title: details === 'posted' ? 'Manage Posted' : 'Manage Applied',
     userId: userId,
-    jobId: listOfJobsPendingApplied.length ? listOfJobsPendingApplied[0].job_id : null,
-    listOfJobsPendingApplied,
+    jobId: dataToSend.length ? dataToSend[0].job_id : null,
+    page: details,
+    dataToSend,
   });
 }
 
@@ -201,3 +190,7 @@ export const deleteOneJob = async (req, res) => {
   res.redirect(`/profile/${userId}`);
 }
 
+// select email, job_info FROM users INNER JOIN job_details on job_details.employee_id=users.user_id INNER JOIN jobs on jobs.job_id=job_details.job_id 
+
+// // second query
+// select email, job_info FROM users INNER JOIN job_details on job_details.employee_id=users.user_id INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=1   

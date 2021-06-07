@@ -2,22 +2,41 @@
 
   
 
-   <div class="jumbotron jumbotron-fluid">
+   <div class="jumbotron jumbotron-fluid text-white jumb">
      <span><a class="back-btn-top" href="/profile/<%=userId%>"><i class="bi bi-arrow-return-left ml-5 back-icon"></i></a></span>
      
-    <div class="container">
-      <h1 class="display-5">Jobs Applied</h1>
-      <p class="lead">This are the jobs you've applied for. Hang in there the employer would get back to you soon.</p>
-    </div>
-  </div>
+      <% if (page === 'applied') { %>
+          <div class="container">
+      
+            <h1 class="display-5">Jobs Applied</h1>
+            <p class="lead">This are the jobs you've applied for. Hang in there the employer would get back to you soon.</p>
+          </div>
+      <% } else { %>
+            <div class="container">
 
- <div class="container-fluid mt-sm-1 pt-sm-1 mt-md-5 pt-md-5 form-div-register">
+              <h1 class="display-5">Jobs Posted</h1>
+              <p class="lead">This are the jobs you've posted. Manage theses jobs here. Accept or reject applicants.</p>
+            </div>
+      <%}%>
+  </div>
+      
+<div class="container">
+  <div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8 text-center">
+      <h2>Manage Jobs</h2>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
+</div>
+
+ <div class="container-fluid mt-sm-1 pt-sm-1 mt-md-1 pt-md-1 form-div-register">
     <div class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-8 col-md-12 p-5">
-      <% if (listOfJobsPendingApplied.length) { %>
+      <% if (dataToSend.length) { %>
       
-          <% listOfJobsPendingApplied.forEach(job => { %>
+          <% dataToSend.forEach(job => { %>
           <div class="card mb-3 mt-3 pt-3 shadow">
             <!-- <img src="..." class="card-img-top" alt="map goes here"> -->
             
@@ -30,24 +49,46 @@
               </div>
               <div class="container">
                 <div class="row">
-                 <div class="col-sm-12 p-3 manage-action-btn">
-                    <div>
-                    <form action="/jobs" method="POST">
-                      <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⭐️">
-                    </form>
-                    </div>
+                  <% if (page === 'applied') { %>
+                      <div class="col-sm-12 p-3 manage-action-btn">
+                        <div>
+                          <form action="/jobs" method="POST">
+                            <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⏰">
+                          </form>
+                        </div>
 
-                    <div class="cancel-job-div">
-                      <form class=""  action="/jobs" method="POST">
+                        <div class="cancel-job-div">
+                          <form class=""  action="/jobs" method="POST">
 
-              <!-- Button trigger modal -->
-        <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
-          Cancel Job 😌"
-        </button>
-                    </form>
-                    </div>
+                                  <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
+                              Cancel Job ❌
+                            </button>
 
-                  </div>
+                          </form>
+                        </div>
+                      </div>
+                  <% } else { %>
+                        <div class="col-sm-12 p-3 manage-action-btn">
+                          <div>
+                            <form action="/jobs" method="POST">
+                              <input class="btn btn-sm interest-btn" type="submit" value="Accept! 👍">
+                            </form>
+                          </div>
+
+                          <div class="cancel-job-div">
+                            <form class=""  action="/jobs" method="POST">
+
+                                    <!-- Button trigger modal -->
+                              <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
+                                Reject 👎"
+                              </button>
+
+                            </form>
+                          </div>
+                        </div>
+                  <% }%> 
+
                 </div>
               </div>
 
@@ -65,7 +106,8 @@
   </div>
 
 <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<% if (page === 'applied') { %>
+ <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -75,7 +117,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Want to wait a little more to decide? The employer has already received your interest.You'd get a response soon!
+        Maybe a little more time to decide? The employer has already received your interest.You'd get a response soon!
       </div>
       <div class="modal-footer">
         <button type="button" class="btn" data-dismiss="modal">Close</button>
@@ -89,6 +131,34 @@
     </div>
   </div>
 </div>
+<% }  else { %>
+  <!-- ELSE IF PAGE === POSTED -->
+  <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Are you sure you want to reject this applicant?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Maybe a little more time to decide? The applicant seems interesting!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+        <form action="/jobs/delete" method="post">
+          <input type="hidden" name="jobId" value="<%=jobId%>">
+          <input type="hidden" name="userId" value="<%=userId%>">
+          <input class="btn btn-sm interest-btn" type="submit" value="Cancel anyway">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %> 
+
 <!-- MODAL -->
 <%- include('../partials/footer.ejs') %> 
 

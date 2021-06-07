@@ -11,8 +11,8 @@
           Manage Jobs
         </button>
         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-          <a class="dropdown-item" href="/jobs/details/<%= userId%>">Jobs Applied</a>
-          <a class="dropdown-item" href="#">Jobs Posted</a>
+          <a class="dropdown-item" href="/jobs/details/<%= userId%>?details=applied">Jobs Applied</a>
+          <a class="dropdown-item" href="/jobs/details/<%= userId%>?details=posted">Jobs Posted</a>
         </div>
       </div>
       <a class="btn btn-secondary" href="/log-out">Log Out</a>

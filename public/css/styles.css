@@ -189,6 +189,9 @@ img {
   margin-top: 6px;
 }
 
+.jumb {
+  background-color: #a211f8;
+}
 
  /* MEDIA QUERIES */
 @media (min-width: 768px) {
