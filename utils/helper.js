@@ -27,7 +27,7 @@ const getJobsPendingInterest = async (userId) => {
   const listOfPendingJobs = [];
 
   // Retrieve all jobs from pending_jobs table relating to user
-  const {rows: listOfPendingJobIds} = await pool.query('SELECT job_id FROM pending_jobs WHERE employee_id=$1', [userId]);
+  // const {rows: listOfPendingJobIds} = await pool.query('SELECT job_id FROM pending_jobs WHERE employee_id=$1', [userId]);
 
   // Retrieve all jobs relating to user from jobs table based on returned jobs_id
   listOfPendingJobIds.forEach(jobId => {
@@ -39,13 +39,13 @@ const getJobsPendingInterest = async (userId) => {
   return listOfPendingJobs;
 };
 
-const getJobsPendingPosted = async (userId) => {
+// const getJobsPendingPosted = async (userId) => {
 
-  // Retireve all jobs in pending_table
-  const { rows: listOfPendingJobIds } = await pool.query(
-    'SELECT job_id FROM pending_jobs WHERE employee_id=$1',
-    [userId]
-  );
-}
+//   // Retireve all jobs in pending_table
+//   const { rows: listOfPendingJobIds } = await pool.query(
+//     'SELECT job_id FROM pending_jobs WHERE employee_id=$1',
+//     [userId]
+//   );
+// }
 
 export { getEmployerEmail, getJobsPendingInterest };

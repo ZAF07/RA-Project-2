@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS pending_jobs;
 DROP TABLE IF EXISTS completed_jobs;
 DROP TABLE IF EXISTS canceled_jobs;
+DROP TABLE IF EXISTS job_details;
+DROP TYPE IF EXISTS job_detail_status;
 
 CREATE TABLE IF NOT EXISTS users (
   user_id SERIAL PRIMARY KEY,
@@ -23,10 +25,11 @@ CREATE TABLE IF NOT EXISTS users (
 --   date DATE
 -- );
 
-CREATE TYPE status AS ENUM ('pending', 'done', 'canceled');
+CREATE TYPE status AS ENUM ('open', 'started', 'completed', 'canceled');
 CREATE TABLE IF NOT EXISTS jobs (
   job_id SERIAL PRIMARY KEY,
   employer_id INT,
+  employee_id INT,
   salary INT,
   job_location TEXT,
   job_cat TEXT,
@@ -35,23 +38,31 @@ CREATE TABLE IF NOT EXISTS jobs (
   date DATE
 );
 
-CREATE TABLE IF NOT EXISTS pending_jobs (
-  pending_id SERIAL PRIMARY KEY,
+CREATE TYPE job_detail_status AS ENUM ('completed', 'cancelled', 'interested', 'started');
+CREATE TABLE job_details (
+  id SERIAL PRIMARY KEY,
   job_id INT,
-  employee_id INT
-);
+  employee_id INT,
+  job_status job_detail_status
+)
 
-CREATE TABLE IF NOT EXISTS completed_jobs (
-  completed_id SERIAL PRIMARY KEY,
-  job_id INT,
-  employee_id INT
-);
+-- CREATE TABLE IF NOT EXISTS pending_jobs (
+--   pending_id SERIAL PRIMARY KEY,
+--   job_id INT,
+--   employee_id INT
+-- );
 
-CREATE TABLE IF NOT EXISTS canceled_jobs (
-  canceled_id SERIAL PRIMARY KEY,
-  job_id INT,
-  employee_id INT
-);
+-- CREATE TABLE IF NOT EXISTS completed_jobs (
+--   completed_id SERIAL PRIMARY KEY,
+--   job_id INT,
+--   employee_id INT
+-- );
+
+-- CREATE TABLE IF NOT EXISTS canceled_jobs (
+--   canceled_id SERIAL PRIMARY KEY,
+--   job_id INT,
+--   employee_id INT
+-- );
 
 -- TO GET LIST OF PENDING JOB EMPLOYEE
 

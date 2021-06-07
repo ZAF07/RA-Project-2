@@ -104,6 +104,12 @@
   opacity: 1;
 }
 
+/* login page register link */
+.register-here-btn {
+  color: #a211f8;
+}
+
+
 /* VIEW JOBS PAGE */
 
 .interest-btn,

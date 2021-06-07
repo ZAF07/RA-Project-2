@@ -16,7 +16,7 @@ router.get('/profile/:uid', userProfile)
 router.post('/register', postRegister);
 router.get('/log-in', login);
 router.post('/log-in', postLogin)
-router.post('/log-out', postLogOut);
+router.get('/log-out', postLogOut);
 // router.get('/jobs/:page', viewJobs);
 
 export default router;

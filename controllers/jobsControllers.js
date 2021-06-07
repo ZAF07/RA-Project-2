@@ -1,24 +1,30 @@
 import pool from '../model/db.js';
 import sendMail from '../nodemailer/mail.js';
-import {getEmployerEmail} from '../helper/helper.js';
+import {getEmployerEmail} from '../utils/helper.js';
 
 const jobInfo = {};
 
 export const viewJobs = async (req, res) => {
   const {page, limit} = req.query;
+  const {userId} = req.cookies;
+  console.log('USER IS HERE viewJobs --->> ',userId);
   const isLoggedIn = req.session.isLoggedIn;
-  console.log('here ---<< ', req.session.isLoggedIn);
+  console.log('is logged in ? ---<< ', req.session.isLoggedIn);
 
   // indexes to determine where in retrieved result array from DB to start
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-
   let numOfPaginationLinks = 0;
-  const { rows } = await pool.query('SELECT * FROM jobs');
+
+  // Select only jobs with 'OPEN' status and != current userId
+  const { rows } = await pool.query(
+    'SELECT * FROM jobs WHERE job_status=$1 AND employer_id <>$2',
+    ['open', userId]
+  );
   console.log(' here data -->', rows); // ARRAY
 
-  const calcRows = Math.ceil(11 / limit);
-  console.log(`Number of pages -> ${calcRows}`);
+  // const calcRows = Math.ceil(11 / limit);
+  // console.log(`Number of pages -> ${calcRows}`);
 
   // Get from DB array containing the list of jobs
   // Calculate number of pagination pages needed if i want to display 5 jobs per page
@@ -52,38 +58,32 @@ export const viewJobs = async (req, res) => {
 };
 
 export const createJob = async (req, res) => {  
+
+  //gather job details from user input
   const {userId, salary, location, jobCat, jobInfo} = req.body;
-  const values = [userId, salary, location, jobCat, jobInfo, 'pending'];
+  const values = [userId, salary, location, jobCat, jobInfo, 'open'];
 
 
   try {
 
-    // create job in jobs table
+    // create job in jobs table setting job_status as open
       const { rows: newJobInfo } = await pool.query(
         'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info, job_status) VALUES ($1, $2, $3 ,$4, $5, $6) RETURNING *',
         values
       );
       console.log(newJobInfo[0]);
 
-    // // create pending job status in pending_jobs status
-    // const { rows: pendingJobsPosted } = await pool.query(
-    //   'INSERT INTO pending_jobs (job_id) VALUES($1)',
-    //   [newJobInfo[0].job_id]
-    // );
-
-
-    // res.json(rows)
+      
     res.redirect(`/profile/${userId}`)
   } catch (err) {
     console.log('Error from createJob -->> ', err);
     res.json(err)
   }
-  // res.json(req.body);
 };
 
 export const postInterestForJob = async (req, res) => {
 
-  // retrieve job id from user input
+  // retrieve job id
   const { jobId } = req.body;
   const employeeId = req.cookies.userId;
 
@@ -110,10 +110,17 @@ export const postInterestForJob = async (req, res) => {
     //   jobId,
     // ]);
     // create new pending job row in pending_jobs table
+    // const { rows: pendingJobsPosted } = await pool.query(
+    //   'INSERT INTO pending_jobs (job_id, employee_id) VALUES($1, $2)',
+    //   [jobId, employeeId]
+    // );
+
+    // create new row in 'job_details' table (sending an interest for a job)
     const { rows: pendingJobsPosted } = await pool.query(
-      'INSERT INTO pending_jobs (job_id, employee_id) VALUES($1, $2)',
-      [jobId, employeeId]
+      'INSERT INTO job_details (job_id, employee_id, job_status) VALUES($1, $2, $3)',
+      [jobId, employeeId, 'interested']
     );
+
 
     // redirect user to profile page with success message
     res.redirect(`/profile/${employeeId}`);

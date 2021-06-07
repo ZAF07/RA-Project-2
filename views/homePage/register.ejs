@@ -2,15 +2,25 @@
 <%- include('../partials/nav.ejs') %> 
 <% const date = new Date() %> 
 
-  <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-5 pt-md-5 form-div-register">
+
+   <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-5">Welcome !</h1>
+      <p class="lead">Join us and start posting or taking jobs anytime.</p>
+    </div>
+  </div>
+
+
+
+  <div class="container-fluid mt-sm-1 pt-sm-1 mt-md-2 pt-md-2 form-div-register">
     <div class="row">
       <div class="col-sm-2"></div>
       <div class="col-sm-8 p-5">
-        <form class="form-signin mt-5 pt-5 text-center" method="POST" action="/register">
+        <form class="form-signin mt-1 pt-1 text-center" method="POST" action="/register">
           <% if (typeof registerErr === 'string') { %>
            <small class="alert alert-danger mb-3 pb-3 d-block"><%= registerErr %></small>
           <% } %>
-          <h1 class="h3 mb-3 font-weight-normal">Register your account now!</h1>
+          <h1 class="h3 mb-3 font-weight-normal">Join us now!</h1>
           <label for="inputEmail" class="sr-only">Email address</label>
           <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="" name="email">
           <label for="inputPassword" class="sr-only">Password</label>

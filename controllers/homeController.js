@@ -1,4 +1,4 @@
-import {getJobsPendingInterest} from '../helper/helper.js';
+import {getJobsPendingInterest} from '../utils/helper.js';
 
 import pool from '../model/db.js';
 import jsSHA from 'jssha';
@@ -129,6 +129,16 @@ export const postLogOut = (req, res) => {
   
   // reset all global user properties
   userInfo.isActive = true;
+  userInfo.userId = '';
+  userInfo.email = '';
+  userInfo.listOfjobsCompleted = '';
+  userInfo.listOfJobsPosted = '';
+  userInfo.listOfJobsPendingPosted = '';
+  userInfo.listOfJobsPendingApplied = '';
+  userInfo.totalSpent = '';
+  userInfo.totalEarned = '';
+
+
   res.clearCookie('userId');
   req.session.destroy(function (err) {
     res.redirect('/');
@@ -207,10 +217,10 @@ console.log(path.basename(referer));
 // // Gather user info for profile page
 const gatherUserInfo = async (userId) => {
   // //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
-  // const { rows: listOfjobsCompleted } = await pool.query(
-  //   'SELECT * FROM jobs WHERE employee_id=$1',
-  //   [userInfo.userId]
-  // );
+  const { rows: listOfjobsCompleted } = await pool.query(
+    'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
+    [userInfo.userId, 'completed']
+  );
   // //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
   const { rows: listOfJobsPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1',
@@ -219,62 +229,65 @@ const gatherUserInfo = async (userId) => {
   //SELECT * FROM jobs WHERE employer_id=user_id AND job_status='pending'-> pending approval (posted)
   const { rows: listOfJobsPendingPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1 AND job_status=$2',
-    [userInfo.userId, 'pending']
+    [userInfo.userId, 'open']
+  );
+
+  const { rows: listOfJobsPendingApplied } = await pool.query(
+    'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
+    [userInfo.userId, 'interested']
   );
 
   //SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
   const { rows: listOfAmtSpent } = await pool.query(
-    'SELECT salary FROM jobs WHERE employer_id=$1',
-    [userInfo.userId]
+    'SELECT salary FROM jobs WHERE employer_id=$1 AND job_status=$2',
+    [userInfo.userId, 'completed']
   );
   // //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
-  // const { rows: totalAmtEarned } = await pool.query(
-  //   'SELECT salary FROM jobs WHERE employee_id=$1',
-  //   [userInfo.userId]
-  // );
+  const { rows: totalAmtEarned } = await pool.query(
+    'SELECT salary FROM jobs WHERE employee_id=$1 AND job_status=$2',
+    [userInfo.userId, 'completed']
+  );
 
   // calculate total amount spent / earned
   let totalSpent = 0;
   let totalEarned = 0;
 
-  // listOfAmtSpent.forEach((amt) => {
-  //   totalSpent += amt.salary;
-  // });
-  // totalAmtEarned.forEach((amt) => {
-  //   totalEarned += amt.salary;
-  // });
-
+  listOfAmtSpent.forEach((amt) => {
+    totalSpent += amt.salary;
+  });
+  totalAmtEarned.forEach((amt) => {
+    totalEarned += amt.salary;
+  });
 
   // if (listOfjobsCompleted.length < 2) {
   //   console.log('--->', listOfjobsCompleted.length);
   //   userInfo.isActive = false;
   // }
 
-   
-    //  userInfo.listOfjobsCompleted = listOfjobsCompleted;
-    userInfo.listOfJobsPosted = listOfJobsPosted;
-    userInfo.listOfJobsPendingPosted = listOfJobsPendingPosted;
-    userInfo.listOfJobsPendingApplied = await getJobsPendingInterest(userId);
-     userInfo.totalSpent = totalSpent
-     userInfo.totalEarned = totalEarned
+  userInfo.listOfjobsCompleted = listOfjobsCompleted;
+  userInfo.listOfJobsPosted = listOfJobsPosted;
+  userInfo.listOfJobsPendingPosted = listOfJobsPendingPosted;
+  userInfo.listOfJobsPendingApplied = listOfJobsPendingApplied;
+  userInfo.totalSpent = totalSpent;
+  userInfo.totalEarned = totalEarned;
 
-     // return object
-    //  return {
-    //    listOfjobsTaken: listOfjobsTaken,
-    //    listOfJobsPosted: listOfJobsPosted,
-    //    listOfJobsPendingPosted: listOfJobsPendingPosted,
-    //    listOfJobsPendingApplied: listOfJobsPendingApplied,
-    //    totalSpent: totalSpent,
-    //    totalEarned: totalEarned,
-    //  };
+  // return object
+  //  return {
+  //    listOfjobsTaken: listOfjobsTaken,
+  //    listOfJobsPosted: listOfJobsPosted,
+  //    listOfJobsPendingPosted: listOfJobsPendingPosted,
+  //    listOfJobsPendingApplied: listOfJobsPendingApplied,
+  //    totalSpent: totalSpent,
+  //    totalEarned: totalEarned,
+  //  };
 
-    //  console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
-    //  console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
-     console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
-    //  console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
-     console.log('totalSpent --->>', userInfo.totalSpent);
-     console.log('totalEarned --->>', userInfo.totalEarned);
-     console.log('isActive --->> ', userInfo.isActive);
+  //  console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
+  //  console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
+  console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
+  //  console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
+  console.log('totalSpent --->>', userInfo.totalSpent);
+  console.log('totalEarned --->>', userInfo.totalEarned);
+  console.log('isActive --->> ', userInfo.isActive);
 };
 
 export const userProfile = async (req, res) => {
@@ -299,5 +312,6 @@ export const userProfile = async (req, res) => {
     totalSpent: userInfo.totalSpent,
     totalEarned: userInfo.totalEarned,
     isActive: userInfo.isActive,
+    isUserLoggedIn: true,
   });
 };
