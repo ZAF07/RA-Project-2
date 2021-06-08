@@ -26,6 +26,6 @@ app.use('/', homeRouters);
 app.use('/jobs', jobsRouters);
 
 app.listen(
-  process.env.PORT,
+  process.env.PORT || 3000,
   console.log(`Listening on http://localhost:${process.env.PORT}`)
 );
