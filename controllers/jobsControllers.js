@@ -240,8 +240,10 @@ try {
     'UPDATE job_details SET job_status=$1 WHERE employee_id=$2 AND job_id=$3 RETURNING *',
     ['completed', Number(employeeId), Number(jobId)]
   );
-
-  res.redirect(`/profile/${userId}`)
+  //Send mail notify employer job done
+  await sendMail(employeeId, jobInfo.employerEmail);
+  
+  res.redirect(`/profile/${userId}`);
 
   //  res.json({ employeeId, jobId, userId, employerId });
 } catch (error) {
@@ -249,7 +251,6 @@ try {
 }
 
 
-  //Send mail notify employer job done
 
   //redirect to profile
 
