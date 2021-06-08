@@ -49,6 +49,10 @@
               
             
               <div class="card-body">
+                <p class="text-muted">Job Status:<% if ( typeof job.job_status === 'string') { %>
+                 <small class="text-warning"><%= job.job_status %></small>
+                <% } %></p>
+
                 <h5 class="card-title"><%= job.job_cat %></h5>
                 <p class="card-text"><%= job.job_info %></p>
                 <% if (page === 'posted') { %>
@@ -67,27 +71,49 @@
                   <% if (page === 'applied') { %>
                       <div class="col-sm-12 p-3 manage-action-btn">
                         <div>
-                          <form action="/jobs" method="POST">
-                            <input type="hidden" name="jobId" value="<%= job.job_id %>">
-                            <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⏰">
-                          </form>
+                          <!-- Action button for jobs that started -->
+                          <%if (job.job_status === 'started') { %>
+                             <form action="/jobs/complete?id=<%= job.job_id %>" method="POST">
+                              <input type="hidden" name="employerId" value="<%= job.employer_id %>">
+                              <input type="hidden" name="employeeId" value="<%= userId %>">
+                                <input type="hidden" name="jobId" value="<%= job.job_id %>">
+                                <input class="btn btn-sm interest-btn" type="submit" value="Complete Job ! 🌟">
+                              </form>
+                              <!-- Action button for jobs that started -->
+                            <% } else if (job.job_status ==='interested') { %>
+                              <!-- Action button for jobs still pending acceptance -->
+                               <form action="/jobs" method="POST">
+                                <input type="hidden" name="jobId" value="<%= job.job_id %>">
+                                <input class="btn btn-sm interest-btn" type="submit" value="Send Reminder ! ⏰">
+                              </form>
+                                <% } else { %>
+                                  <div></div>
+                                <% } %> 
+                          
+
                         </div>
 
                         <div class="cancel-job-div">
-                          <form class=""  action="/jobs" method="POST">
+                          <% if (job.job_status === 'completed' || job.job_status === 'canceled') { %>
+                           ✅
+                          <% } else { %>
+                             <form>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
+                                  Cancel Job ❌
+                                </button>
 
-                                  <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-sm details-cancel-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
-                              Cancel Job ❌
-                            </button>
+                              </form>
+                          <% } %> 
 
-                          </form>
                         </div>
                       </div>
                   <% } else { %>
-                        <div class="col-sm-12 p-3 manage-action-btn">
+                        <div class="col-sm-12 p-3 manage-action-btn <% if (job.job_status !== 'open') { %> d-none <% } %>">
                           <div>
-                            <form action="/jobs" method="POST">
+                            <form action="/jobs/accept" method="POST">
+                              <input type="hidden" name="employeeId" value="<%= job.user_id %>">
+                              <input type="hidden" name="jobId" value="<%= job.job_id %>">
                               <input class="btn btn-sm interest-btn" type="submit" value="Accept! 👍">
                             </form>
                           </div>
