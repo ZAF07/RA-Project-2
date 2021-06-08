@@ -44,7 +44,7 @@ CREATE TABLE job_details (
   job_id INT,
   employee_id INT,
   job_status job_detail_status
-)
+);
 
 -- CREATE TABLE IF NOT EXISTS pending_jobs (
 --   pending_id SERIAL PRIMARY KEY,
