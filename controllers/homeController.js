@@ -1,25 +1,30 @@
-import {getJobsPendingInterest} from '../utils/helper.js';
+/* eslint-disable import/extensions */
+/* eslint-disable no-shadow */
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+/* eslint-disable camelcase */
 
-import pool from '../model/db.js';
 import jsSHA from 'jssha';
 import bcrypt from 'bcryptjs';
 import path from 'path';
-
+import pool from '../model/db.js';
+import { getJobsPendingInterest } from '../utils/helper.js';
 
 const userInfo = {};
 
 export const home = (req, res) => {
-  const {userId} = req.cookies;
-  const isLoggedIn = req.session.isLoggedIn;
+  const { userId } = req.cookies;
+  const { isLoggedIn } = req.session;
   res.render('homePage/home', {
     title: 'home',
     isUserLoggedIn: isLoggedIn,
-    userId
+    userId,
   });
 };
 
 export const register = (req, res) => {
-  const isLoggedIn = req.session.isLoggedIn;
+  const { isLoggedIn } = req.session;
 
   res.render('homePage/register', {
     title: 'Register an account!',
@@ -29,19 +34,17 @@ export const register = (req, res) => {
 };
 
 export const login = (req, res) => {
-  res.render('homePage/login', {title: 'Log In'})
-}
+  res.render('homePage/login', { title: 'Log In' });
+};
 
 export const postLogin = async (req, res) => {
-
   // Check referer pathname to redirect to after successful authentication
-  const {referer} = req.headers;
-  console.log('REFERER --->>>> ',referer);
-
+  const { referer } = req.headers;
+  console.log('REFERER --->>>> ', referer);
 
   // Retrieve user details
-  const {email: userEmail} = req.body;
-  const {password: userPassword} = req.body;
+  const { email: userEmail } = req.body;
+  const { password: userPassword } = req.body;
   console.log(userPassword);
 
   // Check if user exists
@@ -65,7 +68,7 @@ export const postLogin = async (req, res) => {
     // populating global user obj for user profile controller to use after redirect
     userInfo.email = email;
     userInfo.userId = user_id;
-    // setting user id in cookie 
+    // setting user id in cookie
     res.cookie('userId', user_id);
     // compare password
     const salt = bcrypt.genSaltSync(10);
@@ -87,17 +90,11 @@ export const postLogin = async (req, res) => {
         if (path.basename(referer) === 'jobs') {
           // res.redirect('jobs/create-job');
           res.send(
-            'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job. Redirect to profile page and show dashboard'
+            'Logged in from view Jobs page after clicking Im Interest! ->  Send email to job creator notifyting that this person is interested in taking up the job. Redirect to profile page and show dashboard',
           );
 
           return;
         }
-        // if (referer === 'http://localhost:3000/jobs/details/1') {
-        //   // res.redirect('jobs/create-job');
-        //   res.render('jobsPage/details', {title: 'Details'});
-        //   return;
-        // }
-
 
         // Redirect to profile page
 
@@ -115,20 +112,14 @@ export const postLogin = async (req, res) => {
       });
     });
   } catch (error) {
-
     // This could be server error
     console.log('ERROR FROM postLogin --> ', error);
-          // res.render('homePage/login', {
-          //   title: 'Log In',
-          //   registerErr:
-          //     "Oops! Looks like your password did not match! Try again? ",
-          // });
-          res.send('Create error page')
+
+    res.send('Create error page');
   }
 };
 
 export const postLogOut = (req, res) => {
-  
   // reset all global user properties
   userInfo.isActive = true;
   userInfo.userId = '';
@@ -140,114 +131,112 @@ export const postLogOut = (req, res) => {
   userInfo.totalSpent = '';
   userInfo.totalEarned = '';
 
-
   res.clearCookie('userId');
-  req.session.destroy(function (err) {
+  req.session.destroy((err) => {
     res.redirect('/');
   });
-}
+};
 
 export const postRegister = async (req, res) => {
   // retrieve user info from body
   const { email, password } = req.body;
 
   // get referer path
-  const {referer} = req.headers;
-console.log(path.basename(referer));
+  const { referer } = req.headers;
+  console.log(path.basename(referer));
   // check if user already exists
-    try {
-      const { rows } = await pool.query('SELECT * FROM users WHERE email=$1', [
-        email,
-      ]);
-      
-      // if user !exists in DB, hash password, save user in DB and redirect to profile page
-      if (!rows.length) {
-        // JsSHA
-        // // Hash and salt
-        // const shaObj = new jsSHA('SHA-512', 'TEXT', { encoding: 'UTF8' });
-        // shaObj.update(password);
-        // // hashed password
-        // const hash = shaObj.getHash('HEX');
+  try {
+    const { rows } = await pool.query('SELECT * FROM users WHERE email=$1', [
+      email,
+    ]);
 
-        // BCRYPT
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(password, salt);
+    // if user !exists in DB, hash password, save user in DB and redirect to profile page
+    if (!rows.length) {
+      // JsSHA
+      // // Hash and salt
+      // const shaObj = new jsSHA('SHA-512', 'TEXT', { encoding: 'UTF8' });
+      // shaObj.update(password);
+      // // hashed password
+      // const hash = shaObj.getHash('HEX');
 
-        const { rows } = await pool.query(
-          'INSERT INTO users (email, password) VALUES($1,$2) RETURNING *',
-          [email, hash]
-        );
+      // BCRYPT
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(password, salt);
 
-        const { rows: userDetails } = await pool.query(
-          'SELECT * FROM users  WHERE email=$1', [email]
-        );
+      const { rows } = await pool.query(
+        'INSERT INTO users (email, password) VALUES($1,$2) RETURNING *',
+        [email, hash],
+      );
 
-        // set 'inactive' status to new user so ejs knows to display msg to nudge user to set/get jobs 
-        if (path.basename(referer) === 'register') {
-          userInfo.isActive = false;
-        }
-          // populating global user obj for user profile controller to use after redirect
-          userInfo.email = userDetails[0].email;
-          userInfo.userId = userDetails[0].user_id;
-          console.log(`THIS IS FROM REGISTER ROUTE =--=-=-=-=> `, userDetails[0]);
+      const { rows: userDetails } = await pool.query(
+        'SELECT * FROM users  WHERE email=$1', [email],
+      );
 
-        // Create session and cookie here
-        if (!req.session.isLoggedIn) {
-          // setting user id in cookie
-          res.cookie('userId', userInfo.userId);
-          req.session.isLoggedIn = true;
-        }
-        res.status(200).redirect(`/profile/${userInfo.userId}`);
-        return;
+      // set 'inactive' status to new user so ejs knows to display msg to nudge user to set/get jobs
+      if (path.basename(referer) === 'register') {
+        userInfo.isActive = false;
       }
-      // redirect to register page with err msg if user already exists
-      res.render('homePage/register', {
-        title: 'Register an account!',
-        registerErr:
-          'A user with the email address already exists. Sign in or create a new account here',
-      });
-      //res.send('User already exists. Render register page with user exists err msg')
+      // populating global user obj for user profile controller to use after redirect
+      userInfo.email = userDetails[0].email;
+      userInfo.userId = userDetails[0].user_id;
+      console.log('THIS IS FROM REGISTER ROUTE =--=-=-=-=> ', userDetails[0]);
 
+      // Create session and cookie here
+      if (!req.session.isLoggedIn) {
+        // setting user id in cookie
+        res.cookie('userId', userInfo.userId);
+        req.session.isLoggedIn = true;
+      }
+      res.status(200).redirect(`/profile/${userInfo.userId}`);
       return;
-    } catch (error) {
-      console.log('ERROR FROM postRegister query --> ', error);
-      res.send(error)
     }
-};
+    // redirect to register page with err msg if user already exists
+    res.render('homePage/register', {
+      title: 'Register an account!',
+      registerErr:
+          'A user with the email address already exists. Sign in or create a new account here',
+    });
+    // res.send('User already exists. Render register page with user exists err msg')
 
+    return;
+  } catch (error) {
+    console.log('ERROR FROM postRegister query --> ', error);
+    res.send(error);
+  }
+};
 
 // // Gather user info for profile page
 const gatherUserInfo = async (userId) => {
   // //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
   const { rows: listOfjobsCompleted } = await pool.query(
     'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed']
+    [userInfo.userId, 'completed'],
   );
   // //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
   const { rows: listOfJobsPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1',
-    [userInfo.userId]
+    [userInfo.userId],
   );
-  //SELECT * FROM jobs WHERE employer_id=user_id AND job_status='pending'-> pending approval (posted)
+  // SELECT * FROM jobs WHERE employer_id=user_id AND job_status='pending'-> pending approval (posted)
   const { rows: listOfJobsPendingPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1 AND job_status=$2',
-    [userInfo.userId, 'open']
+    [userInfo.userId, 'open'],
   );
 
   const { rows: listOfJobsPendingApplied } = await pool.query(
     'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'interested']
+    [userInfo.userId, 'interested'],
   );
 
-  //SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
+  // SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
   const { rows: listOfAmtSpent } = await pool.query(
     'SELECT salary FROM jobs WHERE employer_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed']
+    [userInfo.userId, 'completed'],
   );
   // //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
   const { rows: totalAmtEarned } = await pool.query(
     'SELECT salary FROM jobs WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed']
+    [userInfo.userId, 'completed'],
   );
 
   // calculate total amount spent / earned
@@ -274,18 +263,6 @@ const gatherUserInfo = async (userId) => {
   userInfo.totalEarned = totalEarned;
   userInfo.userId = userId;
 
-  // return object
-  //  return {
-  //    listOfjobsTaken: listOfjobsTaken,
-  //    listOfJobsPosted: listOfJobsPosted,
-  //    listOfJobsPendingPosted: listOfJobsPendingPosted,
-  //    listOfJobsPendingApplied: listOfJobsPendingApplied,
-  //    totalSpent: totalSpent,
-  //    totalEarned: totalEarned,
-  //  };
-
-  //  console.log('jobsTaken --->>', userInfo.listOfjobsTaken.length);
-  //  console.log('jobsPosted --->>', userInfo.listOfJobsPosted.length);
   console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
   //  console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
   console.log('totalSpent --->>', userInfo.totalSpent);
@@ -294,11 +271,8 @@ const gatherUserInfo = async (userId) => {
 };
 
 export const userProfile = async (req, res) => {
-
   // gather user info
   await gatherUserInfo(userInfo.userId);
-
-  
 
   // if no session ID redirect home
   if (!req.session.isLoggedIn) {
@@ -317,6 +291,6 @@ export const userProfile = async (req, res) => {
     totalEarned: userInfo.totalEarned,
     isActive: userInfo.isActive,
     isUserLoggedIn: true,
-    userId: userInfo.userId
+    userId: userInfo.userId,
   });
 };
