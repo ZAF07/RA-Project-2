@@ -9,7 +9,6 @@ import jsSHA from 'jssha';
 import bcrypt from 'bcryptjs';
 import path from 'path';
 import pool from '../model/db.js';
-import { getJobsPendingInterest } from '../utils/helper.js';
 
 const userInfo = {};
 
