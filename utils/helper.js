@@ -2,12 +2,8 @@
 /* eslint-disable no-console */
 import pool from '../model/db.js';
 
-/**
- * Queries DB for an employers email adress
- * @param {int} jobId  i am the job id retrieved from DB
- * @returns  {str} Employer's email
- */
-const getEmployerEmail = async (jobId) => {
+// eslint-disable-next-line consistent-return
+export default async (jobId) => {
   try {
     // Get employer_id from jobs
     const { rows: employerId } = await pool.query(
@@ -20,12 +16,12 @@ const getEmployerEmail = async (jobId) => {
       'SELECT email FROM users WHERE user_id=$1',
       [employerId[0].employer_id],
     );
-    // console.log('EMPLOYER EMAILL OR SO ---<<>>> ', employerEmail);
-    // jobInfo.employerEmail = employerEmail[0].email;
-    return employerEmail[0].email;
+
+    return {
+      employerEmail: employerEmail[0].email,
+      employerId: employerId[0].employer_id,
+    };
   } catch (error) {
     console.log('Helper function getEmployerEmail error --> ', error);
   }
 };
-
-export { getEmployerEmail };

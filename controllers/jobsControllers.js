@@ -1,12 +1,14 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable max-len */
+/* eslint-disable no-shadow */
 /* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
+// eslint-disable-next-line import/extensions
 import pool from '../model/db.js';
-import sendMail from '../nodemailer/mail.js';
-import { getEmployerEmail } from '../utils/helper.js';
+// eslint-disable-next-line import/extensions
+import { sendInterestMail, sendCompleteMail } from '../utils/nodemailer/mail.js';
+// eslint-disable-next-line import/extensions
+import getEmployerEmail from '../utils/helper.js';
 
-const jobInfo = {};
+let jobInfo;
 
 export const viewJobs = async (req, res) => {
   const { page, limit } = req.query;
@@ -53,8 +55,10 @@ export const viewJobs = async (req, res) => {
   // Split into smaller arrays
   const jobsToDisplay = returnedListOfJobsAvailable.slice(startIndex, endIndex);
 
+  // eslint-disable-next-line no-console
   console.log('HERE IS WAHT IM SENDING', jobsToDisplay);
 
+  // eslint-disable-next-line no-console
   console.log('Final pagination count --> ', numOfPaginationLinks);
 
   // console.log(currentPage);
@@ -71,7 +75,6 @@ export const viewJobs = async (req, res) => {
 export const createJob = async (req, res) => {
   // gather job details from user input
   const {
-    // eslint-disable-next-line no-shadow
     userId, salary, location, jobCat, jobInfo,
   } = req.body;
   const values = [userId, salary, location, jobCat, jobInfo, 'open'];
@@ -82,10 +85,12 @@ export const createJob = async (req, res) => {
       'INSERT INTO jobs (employer_id, salary, job_location, job_cat, job_info, job_status) VALUES ($1, $2, $3 ,$4, $5, $6) RETURNING *',
       values,
     );
+    // eslint-disable-next-line no-console
     console.log(newJobInfo[0]);
 
     res.redirect(`/profile/${userId}`);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log('Error from createJob -->> ', err);
     res.json(err);
   }
@@ -102,10 +107,10 @@ export const postInterestForJob = async (req, res) => {
     return;
   }
   try {
-    jobInfo.employerEmail = await getEmployerEmail(jobId);
+    jobInfo = await getEmployerEmail(jobId);
 
     // If logged in, send notification to job creater aka employer
-    await sendMail(employeeId, jobInfo.employerEmail);
+    await sendInterestMail(employeeId, jobInfo.employerEmail, jobInfo.employerId);
 
     // create new row in 'job_details' table (sending an interest for a job)
     const { rows: pendingJobsPosted } = await pool.query(
@@ -158,24 +163,16 @@ export const jobDetails = async (req, res) => {
 
   // check if user looking for job applied or posted information
   if (details === 'applied') {
-    // THIS QUERIES ONLY INTERESTED STATUS
-    // const { rows: listOfJobsPendingApplied } = await pool.query(
-    //   'SELECT jobs.job_id, job_info, job_details.job_status, job_location, salary, job_cat FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1 AND job_details.job_status=$2',
-    //   [userId, 'interested']
-    // );
-    // THIS QUERIES ALL REGARDLESS STATUS (could use this for another page for displaying jobs in progress)
+    // THIS QUERIES ALL REGARDLESS STATUS
+    // (could use this for another page for displaying jobs in progress)
     const { rows: listOfJobsPendingApplied } = await pool.query(
       'SELECT jobs.job_id, job_info, job_details.job_status, job_location, salary, job_cat, jobs.employer_id FROM jobs join job_details ON jobs.job_id = job_details.job_id WHERE job_details.employee_id=$1',
       [userId],
     );
     dataToSend = listOfJobsPendingApplied;
   } else {
-    // THIS QUERIES ONLY INTERESTED STATUS
-    // const { rows: listOfJobsPendingPosted } = await pool.query(
-    //   'select email, user_id, job_info, salary, job_cat, jobs.job_status, jobs.job_id FROM users INNER JOIN job_details on job_details.employee_id=users.user_id and job_details.job_status=$2 INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=$1',
-    //   [userId, 'interested']
-    // );
-    // THIS QUERIES ALL REGARDLESS STATUS (could use this for another page for displaying jobs in progress)
+    // THIS QUERIES ALL REGARDLESS STATUS
+    // (could use this for another page for displaying jobs in progress)
     const { rows: listOfJobsPendingPosted } = await pool.query(
       'select email, user_id, job_info, salary, job_cat, jobs.job_status, jobs.job_id FROM users INNER JOIN job_details on job_details.employee_id=users.user_id  INNER JOIN jobs on jobs.job_id=job_details.job_id and jobs.employer_id=$1',
       [userId],
@@ -227,7 +224,10 @@ export const postJobsComplete = async (req, res) => {
   console.log(typeof userId);
   console.log('employee id ?? -->> ', employeeId);
   try {
-  // Update DB
+    // Get employer details
+    jobInfo = await getEmployerEmail(jobId);
+
+    // Update DB
     const { rows: jobsSet } = await pool.query(
       'UPDATE jobs SET job_status=$1 WHERE employee_id=$2 AND job_id=$3 AND employer_id=$4 RETURNING *',
       ['completed', Number(employeeId), Number(jobId), Number(employerId)],
@@ -238,7 +238,7 @@ export const postJobsComplete = async (req, res) => {
       ['completed', Number(employeeId), Number(jobId)],
     );
     // Send mail notify employer job done
-    await sendMail(employeeId, jobInfo.employerEmail);
+    await sendCompleteMail(employeeId, jobInfo.employerEmail, jobInfo.employerId);
 
     res.redirect(`/profile/${userId}`);
 
