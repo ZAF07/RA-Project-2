@@ -4,9 +4,9 @@
 // eslint-disable-next-line import/extensions
 import pool from '../model/db.js';
 // eslint-disable-next-line import/extensions
-import { sendInterestMail, sendCompleteMail } from '../utils/nodemailer/mail.js';
+import { sendInterestMail, sendCompleteMail, sendAcceptedMail } from '../utils/nodemailer/mail.js';
 // eslint-disable-next-line import/extensions
-import getEmployerEmail from '../utils/helper.js';
+import { getEmployerEmail, getEmployeeEmail } from '../utils/helper.js';
 
 let jobInfo;
 
@@ -210,6 +210,11 @@ export const postAcceptJob = async (req, res) => {
     await pool.query('UPDATE jobs SET job_status=$1, employee_id=$2 WHERE job_id=$3', ['started', employeeId, jobId]);
 
     await pool.query('UPDATE job_details SET job_status=$1 WHERE job_id=$2 AND employee_id=$3', ['started', jobId, employeeId]);
+
+    const { employerId, employerEmail } = await getEmployerEmail(jobId);
+    const employeeEmailAddress = await getEmployeeEmail(employeeId);
+
+    sendAcceptedMail(employeeId, employerId, employerEmail, employeeEmailAddress);
 
     res.redirect(`/profile/${userId}`);
   } catch (error) {

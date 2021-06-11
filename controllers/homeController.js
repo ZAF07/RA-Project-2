@@ -65,8 +65,8 @@ export const postLogin = async (req, res) => {
     // if user exists, decrypt password, if password matches,set cookie and session then redirect to profile page
     const { password, email, user_id } = rows[0];
     // populating global user obj for user profile controller to use after redirect
-    userInfo.email = email;
-    userInfo.userId = user_id;
+    // userInfo.email = email;
+    // userInfo.userId = user_id;
     // setting user id in cookie
     res.cookie('userId', user_id);
     // compare password
@@ -98,10 +98,10 @@ export const postLogin = async (req, res) => {
         // Redirect to profile page
 
         // populating global user obj for user profile controller to use after redirect
-        userInfo.email = email;
-        userInfo.userId = user_id;
+        // userInfo.email = email;
+        // userInfo.userId = user_id;
 
-        res.status(200).redirect(`/profile/${userInfo.userId}`);
+        res.status(200).redirect(`/profile/${user_id}`);
         return;
       }
       // If user doesn't exist render login page with error
@@ -176,17 +176,17 @@ export const postRegister = async (req, res) => {
         userInfo.isActive = false;
       }
       // populating global user obj for user profile controller to use after redirect
-      userInfo.email = userDetails[0].email;
-      userInfo.userId = userDetails[0].user_id;
+      // userInfo.email = userDetails[0].email;
+      // userInfo.userId = userDetails[0].user_id;
       console.log('THIS IS FROM REGISTER ROUTE =--=-=-=-=> ', userDetails[0]);
 
       // Create session and cookie here
       if (!req.session.isLoggedIn) {
         // setting user id in cookie
-        res.cookie('userId', userInfo.userId);
+        res.cookie('userId', userDetails[0].user_id);
         req.session.isLoggedIn = true;
       }
-      res.status(200).redirect(`/profile/${userInfo.userId}`);
+      res.status(200).redirect(`/profile/${userDetails[0].user_id}`);
       return;
     }
     // redirect to register page with err msg if user already exists
@@ -206,36 +206,40 @@ export const postRegister = async (req, res) => {
 
 // // Gather user info for profile page
 const gatherUserInfo = async (userId) => {
+  const userInfo = {};
+
+  const { rows: userEmail } = await pool.query('SELECT email FROM users WHERE user_id=$1', [userId]);
+
   // //SELECT * FROM jobs WHERE employee_id=user_id; -> jobs taken
   const { rows: listOfjobsCompleted } = await pool.query(
     'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed'],
+    [userId, 'completed'],
   );
   // //SELECT * FROM jobs WHERE employer_id=user_id; -> jobs posted
   const { rows: listOfJobsPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1',
-    [userInfo.userId],
+    [userId],
   );
   // SELECT * FROM jobs WHERE employer_id=user_id AND job_status='pending'-> pending approval (posted)
   const { rows: listOfJobsPendingPosted } = await pool.query(
     'SELECT * FROM jobs WHERE employer_id=$1 AND job_status=$2',
-    [userInfo.userId, 'open'],
+    [userId, 'open'],
   );
 
   const { rows: listOfJobsPendingApplied } = await pool.query(
     'SELECT * FROM job_details WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'interested'],
+    [userId, 'interested'],
   );
 
   // SELECT salary FROM jobs WHERE employer_id=user_id; -> total spent
   const { rows: listOfAmtSpent } = await pool.query(
     'SELECT salary FROM jobs WHERE employer_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed'],
+    [userId, 'completed'],
   );
   // //SELECT salary FROM jobs WHERE employee_id=user_id; -> total earned
   const { rows: totalAmtEarned } = await pool.query(
     'SELECT salary FROM jobs WHERE employee_id=$1 AND job_status=$2',
-    [userInfo.userId, 'completed'],
+    [userId, 'completed'],
   );
 
   // calculate total amount spent / earned
@@ -261,22 +265,26 @@ const gatherUserInfo = async (userId) => {
   userInfo.totalSpent = totalSpent;
   userInfo.totalEarned = totalEarned;
   userInfo.userId = userId;
+  userInfo.email = userEmail[0].email;
 
   console.log('jobsPendingPosted --->>', userInfo.listOfJobsPendingPosted);
   //  console.log('jobsPendingApplied --->>', userInfo.listOfJobsPendingApplied);
   console.log('totalSpent --->>', userInfo.totalSpent);
   console.log('totalEarned --->>', userInfo.totalEarned);
   console.log('isActive --->> ', userInfo.isActive);
+
+  return userInfo;
 };
 
 export const userProfile = async (req, res) => {
-  // gather user info
-  await gatherUserInfo(userInfo.userId);
-
   // if no session ID redirect home
   if (!req.session.isLoggedIn) {
     res.status(403).redirect('/');
   }
+  // gather user info
+  const { userId } = req.cookies;
+  const userInfo = await gatherUserInfo(userId);
+  console.log('WAWAWAWAAWWWWA =======>>>>> ', userInfo.email);
 
   console.log('this hsoudf fsdj ==> ', userInfo.userId);
   res.render('user/profile', {
