@@ -11,7 +11,7 @@ export const sendInterestMail = async function main(employeeId, employerEmail, e
     service: 'outlook',
     auth: {
       user: 'halppsg@outlook.com',
-      pass: 'halppsingapore00221199243',
+      pass: process.env.EMAIL_AUTH,
     },
   });
 
