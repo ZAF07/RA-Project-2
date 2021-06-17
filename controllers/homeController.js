@@ -301,3 +301,31 @@ export const userProfile = async (req, res) => {
     userId: userInfo.userId,
   });
 };
+
+// RA CONTROLLERS
+
+const initHomeController = (db) => {
+  const index = (req, res) => {
+    const { userId } = req.cookies;
+    const { isLoggedIn } = req.session;
+    res.render('homePage/home', {
+      title: 'home',
+      isUserLoggedIn: isLoggedIn,
+      userId,
+    });
+  };
+  return {
+    index,
+  };
+};
+
+export { initHomeController };
+// export const home = (req, res) => {
+//   const { userId } = req.cookies;
+//   const { isLoggedIn } = req.session;
+//   res.render('homePage/home', {
+//     title: 'home',
+//     isUserLoggedIn: isLoggedIn,
+//     userId,
+//   });
+// };

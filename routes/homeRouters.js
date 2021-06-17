@@ -1,21 +1,24 @@
+/* eslint-disable import/extensions */
 import express from 'express';
 import {
-  home,
   register,
   login,
   postLogin,
   postRegister,
   postLogOut,
   userProfile,
+  initHomeController,
 } from '../controllers/homeController.js';
 
+const HomeController = initHomeController();
+
 const router = express.Router();
-router.get('/', home);
+router.get('/', HomeController.index);
 router.get('/register', register);
-router.get('/profile/:uid', userProfile)
 router.post('/register', postRegister);
+router.get('/profile/:uid', userProfile);
 router.get('/log-in', login);
-router.post('/log-in', postLogin)
+router.post('/log-in', postLogin);
 router.get('/log-out', postLogOut);
 // router.get('/jobs/:page', viewJobs);
 

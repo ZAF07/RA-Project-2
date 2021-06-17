@@ -1,118 +1,175 @@
-<%- include('../partials/header.ejs') %> 
-<%- include('../partials/nav.ejs') %> 
+<%- include('../partials/header.ejs') %> <%- include('../partials/nav.ejs') %>
 
-   <div class="jumbotron jumbotron-fluid jumb text-white">
-    <div class="container">
-      <h1 class="display-5 text-center">Take or post jobs !</h1>
-      <p class="lead text-center">This is a space for you and others to share jobs.</p>
-    </div>
+<div class="jumbotron jumbotron-fluid jumb text-white">
+  <div class="container">
+    <h1 class="display-5 text-center">Take or post jobs !</h1>
+    <p class="lead text-center">
+      This is a space for you and others to share jobs.
+    </p>
   </div>
- 
-  <div class="container-fluid mt-sm-3 pt-sm-3 mt-md-3 pt-md-3">
-    <div class="row">
-      <div class="col-sm-2"></div>
-      <div class="col-sm-8 p-5 text-center">
-                  <!-- Button trigger modal -->
-        <button type="button" class="btn post-job-btn mb-3" data-toggle="modal" data-target="#staticBackdrop">
-          Post A job
-        </button>
-        <h3>Available Jobs:</h3>
-        <!-- <div class="d-flex flex-column align-items-center"> -->
-        <div class="d-md-flex flex-md-row justify-content-md-between flex-md-wrap">
+</div>
+
+<div class="container-fluid mt-sm-3 pt-sm-3 mt-md-3 pt-md-3">
+  <div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8 p-5 text-center">
+      <!-- Button trigger modal -->
+      <button
+        type="button"
+        class="btn post-job-btn mb-3"
+        data-toggle="modal"
+        data-target="#staticBackdrop"
+      >
+        Post A job
+      </button>
+      <h3>Available Jobs:</h3>
+      <!-- <div class="d-flex flex-column align-items-center"> -->
+      <div
+        class="d-md-flex flex-md-row justify-content-md-between flex-md-wrap"
+      >
         <% jobs.forEach(job => { %>
-         <div class="card flex-md-fill p-3 shadow mb-3 cards">
-           <div class="flex-fill">
-             <small>Job Category : <h3 class="text-wrap"><%= job.job_cat %></h3></small>
-           </div>
-           <div class="flex-fill h-2 text-left">
-             <small>Location : <h6><%= job.job_location %></h6></small><hr>
-           </div>
-           <div class="flex-fill h-2 text-left">
-            <small class="text-left">Job Description :<h6 class="text-wrap"><%= job.job_info %></h6> </small><hr>
-           </div>
-           
-            
-       
-           
-           <div class="container mt-3 p-3">
-              <div class="row">
-                <div class="col-sm-12 text-center">
-                   <form action="/jobs" method="POST">
-                    <input type="hidden" name="jobId" value="<%= job.job_id %>">
-                    <input class="btn btn-sm interest-btn" type="submit" value="I'm Interested!">
-                  </form>
-                </div>
+        <div class="card flex-md-fill p-3 shadow mb-3 cards">
+          <div class="flex-fill">
+            <small
+              >Job Category :
+              <h3 class="text-wrap"><%= job.job_cat %></h3></small
+            >
+          </div>
+          <div class="flex-fill h-2 text-left">
+            <small
+              >Location :
+              <h6><%= job.job_location %></h6></small
+            >
+            <hr />
+          </div>
+          <div class="flex-fill h-2 text-left">
+            <small class="text-left"
+              >Job Description :
+              <h6 class="text-wrap"><%= job.job_info %></h6>
+            </small>
+            <hr />
+            <small>You would be paid $<%= job.salary %></small>
+          </div>
+
+          <div class="container mt-3 p-3">
+            <div class="row">
+              <div class="col-sm-12 text-center">
+                <form action="/jobs" method="POST">
+                  <input type="hidden" name="jobId" value="<%= job.job_id %>" />
+                  <input
+                    class="btn btn-sm interest-btn"
+                    type="submit"
+                    value="I'm Interested!"
+                  />
+                </form>
               </div>
-           </div>
-
-         </div>
-        <% }) %>
+            </div>
+          </div>
         </div>
-
-
-        <!-- PAGINATION -->
-        <% if (typeof numOfPaginationLinks === 'number') { %>
-         <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
-         
-         <% } %>
-        <% } %>
-          
-        <nav aria-label="Page navigation example">
-          <ul class="pagination d-flex flex-wrap">
-            
-                            <!-- PREVIOUS PAGE PAGINATION -->
-              <% if (currentPage != 1) { %>
-            <li class="page-item">
-              <a class="page-link text-dark" href="/jobs?page=<%= currentPage - 1 %>&limit=4" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-              <% } %>
-                              <!-- PAGINATION -->
-              <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
-                  <li class="page-item"><a class="page-link pagination-pg-number<% if (currentPage === i + 1) { %>
-                   active-pagination-page
-                  <% } %>" href="/jobs?page=<%= i + 1 %>&limit=4"><%= i + 1 %></a></li>
-              <% } %>
-
-                              <!-- NEXT PAGE PAGINATION -->
-              <% if (currentPage != numOfPaginationLinks) { %>
-                           <li class="page-item">
-              <a class="page-link text-dark" href="/jobs?page=<%= currentPage + 1 %>&limit=4" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-              <% } %>
-
-          </ul>
-        </nav>
-          
-        
-
+        <% }) %>
       </div>
-      <div class="col-sm-2"></div>
-    </div>
-  </div>
 
+      <!-- PAGINATION -->
+      <% if (typeof numOfPaginationLinks === 'number') { %> <% for( let i = 0; i
+      < numOfPaginationLinks; i++ ) { %> <% } %> <% } %>
+
+      <nav aria-label="Page navigation example">
+        <ul class="pagination d-flex flex-wrap">
+          <!-- PREVIOUS PAGE PAGINATION -->
+          <% if (currentPage != 1) { %>
+          <li class="page-item">
+            <a
+              class="page-link text-dark"
+              href="/jobs?page=<%= currentPage - 1 %>&limit=4"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <% } %>
+          <!-- PAGINATION -->
+          <% for( let i = 0; i < numOfPaginationLinks; i++ ) { %>
+          <li class="page-item">
+            <a
+              class="
+                page-link
+                pagination-pg-number<%
+                if
+                (currentPage
+                ===
+                i
+                +
+                1)
+                {
+                %>
+                active-pagination-page
+                <%
+                }
+                %>
+              "
+              href="/jobs?page=<%= i + 1 %>&limit=4"
+              ><%= i + 1 %></a
+            >
+          </li>
+          <% } %>
+
+          <!-- NEXT PAGE PAGINATION -->
+          <% if (currentPage != numOfPaginationLinks) { %>
+          <li class="page-item">
+            <a
+              class="page-link text-dark"
+              href="/jobs?page=<%= currentPage + 1 %>&limit=4"
+              aria-label="Next"
+            >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
+</div>
 
 <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Let's put some jobs out there!</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="staticBackdropLabel">
+          Let's put some jobs out there!
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        You can post jobs for others to complete too! We all need help every once in a while too!
+        You can post jobs for others to complete too! We all need help every
+        once in a while too!
       </div>
       <div class="modal-footer">
         <button type="button" class="btn" data-dismiss="modal">Close</button>
         <!-- <button type="button" class="btn btn-primary">Understood</button> -->
         <form action="/jobs/create-job" method="GET">
-          <input class="btn btn-sm interest-btn" type="submit" value="Create a job!">
+          <input
+            class="btn btn-sm interest-btn"
+            type="submit"
+            value="Create a job!"
+          />
         </form>
       </div>
     </div>
